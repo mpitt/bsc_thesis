@@ -14,21 +14,24 @@ import random
 from string import split
 import pdb
 
-resultDir = "results"
+resultDir = "results/"+time.strftime("%Y%m%d-%H%M") # 20141225-1453
 numtests = 30
 nodes = 150
 
 verbose = 2 # [3:debug|2:info|1:warning|0:error] 
 graphModes = "all" # [all|random|pref_att]
-nodeStrategy = "all" # [all|random|deg|bet|close|cluster|none]
-linkStrategy = "all" # [all|random|bet|none]
+#nodeStrategy = "random" # [all|random|deg|bet|close|cluster|none]
+#linkStrategy = "none" # [all|random|bet|none]
 
 class dataParser():
     strategyRemove = ""
     strategyOrder = ""
+    degDist = False
 
     def __init__(self, strategy, queue):
-        self.strategyRemove, self.strategyOrder = split(strategy, "_")
+        self.degDist = (strategy == "degdist")
+        if (not self.degDist):
+            self.strategyRemove, self.strategyOrder = split(strategy, "_")
         self.q = queue
 
     def run(self, data):
@@ -37,7 +40,33 @@ class dataParser():
             self.strategyRemove+\
             " in order of "\
             + self.strategyOrder
-        self.getRobustness()
+        if self.degDist:
+            self.getDegreeDistribution()
+        else:
+            self.getRobustness()
+
+    def getDegreeDistribution(self):
+        degreeDistribution = defaultdict(float)
+        samples = 0.0
+        for G in self.data:
+            for node in G:
+                degreeDistribution[G.degree(node)] += 1
+                samples += 1
+        for d in degreeDistribution:
+            degreeDistribution[d] /= samples
+        x = degreeDistribution.keys()
+        y = degreeDistribution.values()
+
+        fitfunc = lambda p, x: p[0] * x ** (p[1])
+        errfunc = lambda p, x, y: (y - fitfunc(p,x))
+
+        out,success = optimize.leastsq(
+                errfunc,
+                [1,-1],
+                args=(x,y)
+                )
+        fittedValue = [out[0]*(v**out[1]) for v in x]
+        q.put({"x": x, "y": y})
   
     def getRobustness(self):
         avgRobustness = defaultdict(list)
@@ -66,7 +95,6 @@ class dataParser():
         if remove == "nodes":
             if order == "random":
                 items = graph.nodes()
-                random.shuffle(items)
             elif order == "deg":
                 d = graph.degree()
                 items = sorted(d, key=d.get, reverse=True)
@@ -94,7 +122,6 @@ class dataParser():
         else:
             if order == "random":
                 items = graph.edges()
-                random.shuffle(items)
             elif order == "bet":
                 betweenness = nx.edge_betweenness_centrality(graph)
                 items = sorted(betweenness, key=betweenness.get, reverse=True)
@@ -107,6 +134,7 @@ class dataParser():
         mainCSize = defaultdict(list)
         mainNonCSize = defaultdict(list)
         for i in range(tests):
+            random.shuffle(items)
             purgedGraph = graph.copy()
             for k in range(int(itemlen*0.8)):
                 if remove == "nodes":
@@ -179,6 +207,9 @@ class dataPlot:
         plt.clf()
 
 if __name__  == "__main__":
+    os.mkdir(resultDir)
+    f = open(resultDir+"/options.txt", "w")
+    f.write("Graph dimension: "+str(nodes)+" nodes, "+str(numtests)+" graphs per topology")
     graphs = {}
     if graphModes == "all" or graphModes == "random":
         graphs["random"] = []
@@ -189,18 +220,23 @@ if __name__  == "__main__":
         for test in range(numtests):
             graphs["pref_att"].append(nx.barabasi_albert_graph(nodes, m=4))
     
-    strategies = []
-    if nodeStrategy == "all":
-        for s in ["random", "deg", "bet", "close", "cluster"]:
-            strategies.append("nodes_"+s)
-    elif nodeStrategy != "none":
-        strategies.append("nodes_"+nodeStrategy)
+    strategies = [
+            "nodes_random",
+            "nodes_deg",
+            "nodes_bet",
+            "degdist"
+            ]
+#    if nodeStrategy == "all":
+#        for s in ["random", "deg", "bet", "close", "cluster"]:
+#            strategies.append("nodes_"+s)
+#    elif nodeStrategy != "none":
+#        strategies.append("nodes_"+nodeStrategy)
   
-    if linkStrategy == "all":
-        for s in ["random", "bet"]:
-            strategies.append("links_"+s)
-    elif linkStrategy != "none":
-        strategies.append("links_"+linkStrategy)
+#    if linkStrategy == "all":
+#        for s in ["random", "bet"]:
+#            strategies.append("links_"+s)
+#    elif linkStrategy != "none":
+#        strategies.append("links_"+linkStrategy)
   
     if verbose >= 3:
         print "Graph modes"
@@ -245,9 +281,16 @@ if __name__  == "__main__":
         if "pref_att" in val:
             plot.x.append(val["pref_att"]["x"])
             plot.y.append((val["pref_att"]["y"], "pref_att"))
-        plot.title = "Robustness metrics with "+s
-        plot.xAxisLabel = "Fraction of failed links/nodes"
-        plot.yAxisLabel = "Main cluster size / initial size"
-        plot.legendPosition = "lower left"
-        plot.outFile = resultDir+"/"+s+"_robustness"
+        if s == "degdist":
+            plot.title = "Degree distribution"
+            plot.xAxisLabel = "Degree"
+            plot.yAxisLabel = "Frequency"
+            plot.legendPosition = "upper right"
+            plot.outFile = resultDir+"/degree_distribution"
+        else:
+            plot.title = "Robustness metrics with "+s
+            plot.xAxisLabel = "Fraction of failed links/nodes"
+            plot.yAxisLabel = "Main cluster size / initial size"
+            plot.legendPosition = "lower left"
+            plot.outFile = resultDir+"/"+s+"_robustness"
         plot.plotData()
