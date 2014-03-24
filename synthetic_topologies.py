@@ -16,7 +16,7 @@ import pdb
 
 resultDir = "results/"+time.strftime("%Y%m%d-%H%M") # 20141225-1453
 numtests = 30
-nodes = 150
+nodes = 1000
 
 verbose = 2 # [3:debug|2:info|1:warning|0:error] 
 graphModes = "all" # [all|random|pref_att]
