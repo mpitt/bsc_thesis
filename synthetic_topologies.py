@@ -16,7 +16,9 @@ import pdb
 
 resultDir = "results/"+time.strftime("%Y%m%d-%H%M") # 20141225-1453
 numtests = 30
-nodes = 1000
+nodes = 500
+gnp_random_p = 0.02
+barabasi_m = 2
 
 verbose = 2 # [3:debug|2:info|1:warning|0:error] 
 graphModes = "all" # [all|random|pref_att]
@@ -209,16 +211,18 @@ class dataPlot:
 if __name__  == "__main__":
     os.mkdir(resultDir)
     f = open(resultDir+"/options.txt", "w")
-    f.write("Graph dimension: "+str(nodes)+" nodes, "+str(numtests)+" graphs per topology")
+    f.write("Graph dimension: "+str(nodes)+" nodes, "+str(numtests)+" graphs per topology\n")
+    f.write("Random generator, p="+str(gnp_random_p)+"\n")
+    f.write("Barabasi generator, m="+str(barabasi_m))
     graphs = {}
     if graphModes == "all" or graphModes == "random":
         graphs["random"] = []
         for test in range(numtests):
-            graphs["random"].append(nx.fast_gnp_random_graph(nodes, p=0.05))
+            graphs["random"].append(nx.fast_gnp_random_graph(nodes, p=gnp_random_p))
     if graphModes == "all" or graphModes == "pref_att":
         graphs["pref_att"] = []
         for test in range(numtests):
-            graphs["pref_att"].append(nx.barabasi_albert_graph(nodes, m=4))
+            graphs["pref_att"].append(nx.barabasi_albert_graph(nodes, m=barabasi_m))
     
     strategies = [
             "nodes_random",
