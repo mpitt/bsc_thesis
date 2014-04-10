@@ -1,4 +1,5 @@
 import sys, os, time
+import cPickle as pk
 from collections import defaultdict
 import numpy as np
 import networkx as nx
@@ -21,7 +22,7 @@ gnp_random_p = 0.02
 barabasi_m = 2
 
 verbose = 2 # [3:debug|2:info|1:warning|0:error] 
-graphModes = "all" # [all|random|pref_att]
+graphModes = "known" # [all|random|pref_att|known]
 #nodeStrategy = "random" # [all|random|deg|bet|close|cluster|none]
 #linkStrategy = "none" # [all|random|bet|none]
 
@@ -223,6 +224,14 @@ if __name__  == "__main__":
         graphs["pref_att"] = []
         for test in range(numtests):
             graphs["pref_att"].append(nx.barabasi_albert_graph(nodes, m=barabasi_m))
+    if graphModes == "known":
+        try:
+            f=open("known.pickle")
+        except IOError:
+            print("File not found")
+        else:
+            graphs = pk.load(f)
+            f.close()
     
     strategies = [
             "nodes_random",
@@ -279,12 +288,10 @@ if __name__  == "__main__":
     for s in retValues:
         val = retValues[s]
         plot = dataPlot()
-        if "random" in val:
-            plot.x.append(val["random"]["x"])
-            plot.y.append((val["random"]["y"], "random"))
-        if "pref_att" in val:
-            plot.x.append(val["pref_att"]["x"])
-            plot.y.append((val["pref_att"]["y"], "pref_att"))
+        for mode in graphs:
+            if mode in val:
+                plot.x.append(val[mode]["x"])
+                plot.y.append((val[mode]["y"], mode))
         if s == "degdist":
             plot.title = "Degree distribution"
             plot.xAxisLabel = "Degree"
