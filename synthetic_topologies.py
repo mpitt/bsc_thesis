@@ -297,12 +297,13 @@ if __name__  == "__main__":
             plot.title = "Degree distribution"
             plot.xAxisLabel = "Degree"
             plot.yAxisLabel = "Frequency"
-            plot.legendPosition = "upper right"
+            plot.legendPosition = "center right"
             plot.outFile = resultDir+"/degree_distribution"
+            plot.plotData(style="o")
         else:
             plot.title = "Robustness metrics with "+s
             plot.xAxisLabel = "Fraction of failed links/nodes"
             plot.yAxisLabel = "Main cluster size / initial size"
             plot.legendPosition = "lower left"
             plot.outFile = resultDir+"/"+s+"_robustness"
-        plot.plotData()
+            plot.plotData()
