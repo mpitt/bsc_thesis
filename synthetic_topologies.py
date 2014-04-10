@@ -137,7 +137,8 @@ class dataParser():
         mainCSize = defaultdict(list)
         mainNonCSize = defaultdict(list)
         for i in range(tests):
-            random.shuffle(items)
+            if order == "random":
+                random.shuffle(items)
             purgedGraph = graph.copy()
             for k in range(int(itemlen*0.8)):
                 if remove == "nodes":
