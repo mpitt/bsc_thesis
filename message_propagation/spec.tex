@@ -1,0 +1,23 @@
+%        File: spec.tex
+%     Created: Mon Apr 14 11:00 AM 2014 C
+% Last Change: Mon Apr 14 11:00 AM 2014 C
+%
+\documentclass[a4paper]{report}
+\usepackage{amsmath}
+\begin{document}
+Sia $G=(N,E)$ un grafo. Sia $G'=(N',E')$ un sottografo di $G$,
+con $N' \subseteq N$.\\
+Ogni nodo in $N'$ trasmette messaggi con informazioni sul proprio vicinato.\\
+I messaggi vengono propagati con una strategia di {\em duplicate detection}:
+ogni nodo memorizza i messaggi che ha già visto e non li trasmette più di una volta.\\
+Siano $T_i, R_i$ definiti come
+\begin{equation}
+  T_i=\{ \forall j \in N.j \text{ riceve un messaggio }m\text{ con informazioni su }i \}
+\end{equation}
+\begin{equation}
+R_i=\lbrace \forall j \in N.i\text{ riceve un messaggio }m\text{ con informazioni su }j \rbrace
+\end{equation}
+Calcolare $P(T_i), P(R_i)$ al variare di $N'$ e di $m$.
+\end{document}
+
+
