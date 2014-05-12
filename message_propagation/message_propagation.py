@@ -15,7 +15,8 @@ class MessagePropagation:
             self.relays = relays
 
     def run(self, times=1000):
-        T = R = [0 for u in self.graph]
+        T = [0 for u in self.graph]
+        R = [0 for u in self.graph]
         for i in range(times):
             rk = map(self.propagate, self.graph.nodes())
             RK = set()
@@ -28,8 +29,8 @@ class MessagePropagation:
                     T[u]+=1
                 if r <= RK:
                     R[u]+=1
-        T = [t/float(times) for t in T]
-        R = [r/float(times) for r in R]
+        T = [float(u)/times for u in T]
+        R = [float(u)/times for u in R]
         return T, R
 
     def propagate(self, u):
