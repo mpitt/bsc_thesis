@@ -63,31 +63,9 @@ if __name__ == "__main__":
             default=cpu_count())
     args = parser.parse_args()
 
-    # This is probably an hack:
-    # Pool.map needs to pickle MessagePropagation.propagate
-    # see http://bytes.com/topic/python/answers/552476-why-cant-you-pickle-instancemethods
-    def _pickle_method(method):
-        func_name = method.im_func.__name__
-        obj = method.im_self
-        cls = method.im_class
-        return _unpickle_method, (func_name, obj, cls)
-
-    def _unpickle_method(func_name, obj, cls):
-        for cls in cls.mro():
-            try:
-                func = cls.__dict__[func_name]
-            except KeyError:
-                pass
-            else:
-                break
-            return func.__get__(obj, cls)
-
-    import copy_reg
-    import types
-    copy_reg.pickle(types.MethodType, _pickle_method, _unpickle_method)
-    # /hack
-
-    G = nx.read_gpickle(args.testcase)
+    G = nx.read_gpickle(args.testcase+"/graph.pickle")
     mp = MessagePropagation(G, args.jobs)
-    testname = re.search(r"(?P<name>[^/]*)\.pickle$", args.testcase).group("name")
-    print mp.run()
+    #testname = re.search(r"(?P<file>[^/]*)$", args.testcase).group("name")
+    resFile = open(args.testcase+"/results", "w+")
+    resFile.write(str(mp.run()))
+    resFile.close()
