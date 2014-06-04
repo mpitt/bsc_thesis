@@ -2,8 +2,7 @@ import networkx as nx
 import numpy as np
 from collections import deque
 from multiprocessing import Pool, cpu_count
-import argparse, re
-import random
+import argparse, re, random, time, os
 
 class MessagePropagation:
     def __init__(self, graph, jobs, relays=[]):
@@ -55,6 +54,23 @@ class MessagePropagation:
                         q.append((v,w))
         return route_knowledge
 
+class ResultFile:
+    def __init__(self, directory, basename):
+        self.basename = basename
+        l = filter(lambda x: x.startswith(basename), os.listdir(directory))
+        if len(l) > 0:
+            last = sorted(l, key=self.filenumber)[-1]
+            new = self.filenumber(last) + 1
+        else:
+            new = 0
+        self.path = directory+"/"+basename+"-"+str(new)
+        self.fo = open(self.path, "w+")
+
+    def filenumber(self, filename):
+        start = len(self.basename) + 1
+        num = filename[start:]
+        return int(num)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("testcase", help="path to the pickle file with the graph")
@@ -67,6 +83,16 @@ if __name__ == "__main__":
     G = nx.read_gpickle(args.testcase+"/graph.pickle")
     mp = MessagePropagation(G, args.jobs)
     #testname = re.search(r"(?P<file>[^/]*)$", args.testcase).group("name")
-    resFile = open(args.testcase+"/results", "w+")
-    resFile.write(str(mp.run()))
+    res = mp.run()
+    date = time.strftime("%Y%m%d-%H%M")
+    resFile = ResultFile(args.testcase, "T").fo
+    resFile.write("T\n")
+    for u in res[0]:
+        resFile.write("%f\n" % u)
+    resFile.close()
+    resFile = ResultFile(args.testcase, "R").fo
+    resFile.write("R\n")
+    for u in res[1]:
+        resFile.write("%f\n" % u)
+    resFile.write("\n")
     resFile.close()
