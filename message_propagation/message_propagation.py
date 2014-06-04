@@ -16,17 +16,17 @@ class MessagePropagation:
     def run(self, times=1000):
         T = [0 for u in self.graph]
         R = [0 for u in self.graph]
+        routes_from = [set([(u,v) for v in self.graph if v != u]) for u in self.graph]
+        routes_to = [set([(v,u) for v in self.graph if v != u]) for u in self.graph]
         for i in range(times):
-            rk = map(self.propagate, self.graph.nodes())
-            RK = set()
-            for s in rk:
-                RK = RK.union(s)
+            known_routes = set()
             for u in self.graph:
-                t = set([(u,v) for v in self.graph if v != u])
-                r = set([(v,u) for v in self.graph if v != u])
-                if t <= RK:
+                rk = self.propagate(u)
+                known_routes = known_routes.union(rk)
+            for u in self.graph:
+                if routes_from[u] <= known_routes:
                     T[u]+=1
-                if r <= RK:
+                if routes_to[u] <= known_routes:
                     R[u]+=1
         T = [float(u)/times for u in T]
         R = [float(u)/times for u in R]
