@@ -1,5 +1,5 @@
 import networkx as nx
-from scipy import stats
+from scipy.stats import uniform
 import sys, os, argparse
 
 if __name__ == '__main__':
@@ -26,9 +26,9 @@ if __name__ == '__main__':
         while(len(nx.connected_components(g)) > 1):
             g = generators[gen](args.nodes, args.gnpp)
     else:
-        g = generator[gen](args.nodes)
+        g = generators[gen](args.nodes)
 
-    dist = stats.uniform(0,args.maxweight)
+    dist = uniform(0,args.maxweight)
     for e in g.edges_iter():
         g[e[0]][e[1]]['weight'] = dist.rvs()
     os.mkdir("cases/"+args.name)
