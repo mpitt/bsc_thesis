@@ -25,7 +25,8 @@ class MessagePropagation:
         else:
             originators = self.graph.nodes()
         for i in range(times):
-            known_routes = set()
+            # each node initially only knows itself
+            known_routes = set([(u,u) for u in self.graph])
             for u in originators:
                 rk = self.propagate(u)
                 known_routes = known_routes.union(rk)
@@ -53,13 +54,7 @@ class MessagePropagation:
         while len(q) > 0:
             u,v = q.popleft()
             n = random.random()
-            if (n >= self.graph[u][v]['weight'] and
-                    v not in received_message
-                    and (
-                        self.mode != "mpr" or
-                        v in list(self.mprSolution[u])[0]
-                        )
-                    ):
+            if (self.forward_message(u, v, received_message)):
                 received_message.add(v)
                 for i in message['content']:
                     route_knowledge.add((i,v))
@@ -67,6 +62,20 @@ class MessagePropagation:
                     if w != u:
                         q.append((v,w))
         return route_knowledge
+
+    def forward_message(self, u, v, received_message):
+        n = random.random()
+        if n >= self.graph[u][v]['weight']:
+            # The link failed
+            return False
+        if v in received_message:
+            # The message was already processed by v
+            return False
+        if (self.mode == "mpr"
+                and v not in list(self.mprSolution[u])[0]):
+            # v is not selected as an MPR of u
+            return False
+        return True
 
 class ResultFile:
     def __init__(self, directory, basename):
