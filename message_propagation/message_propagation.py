@@ -110,12 +110,12 @@ if __name__ == "__main__":
     #testname = re.search(r"(?P<file>[^/]*)$", args.testcase).group("name")
     res = mp.run()
     date = time.strftime("%Y%m%d-%H%M")
-    resFile = ResultFile(args.testcase, "T").fo
+    resFile = ResultFile(args.testcase, "T-"+args.mode).fo
     resFile.write("T\n")
     for u in res[0]:
         resFile.write("%f\n" % u)
     resFile.close()
-    resFile = ResultFile(args.testcase, "R").fo
+    resFile = ResultFile(args.testcase, "R-"+args.mode).fo
     resFile.write("R\n")
     for u in res[1]:
         resFile.write("%f\n" % u)
