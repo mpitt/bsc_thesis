@@ -85,9 +85,16 @@ class ResultFile:
         num = filename[start:]
         return int(num)
 
+def strip_trailing_slash(string):
+    if string.endswith('/'):
+        string = string[:-1]
+    return string
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("testcase", help="path to the pickle file with the graph")
+    parser.add_argument("testcase",
+            type=strip_trailing_slash,
+            help="path to the pickle file with the graph")
     parser.add_argument("-j", "--jobs",
             type=int,
             help="number of workers in the multiprocessing pool",
