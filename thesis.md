@@ -30,33 +30,36 @@ OLSR is used as the routing protocol inside islands.
 
 # OLSR summary
 
-# Robustness analysis of synthetic topologies
+# Robustness analysis
+The first metric analysed is the robustness of the network. The chosen methodology is a variation of the percolation problem described in Chapter 16 of [@newman_networks:_2010].<!--_-->
 
-### Scope
-Analysing the robustness of different kinds of graphs of known topology.
+Defining robustness is not trivial. While it is intuitive that removing nodes or links affects the network ability to successfully transport information, it is not obvious how this ability can be quantified. Moreover, nodes and links in a network are note all equal, neither in the impact of their removal nor in their probability of failure in the real world.
 
-### Methodology
-For each kind of topology generate and analyse 30 different graphs, then compute an average of the results.
+The first concern is traditionally addressed in literature by considering the connected components of the remaining graph. Specifically, the metric is defined as the ratio
 
-### Topologies
-* Random network (`fast_gnp_random_graph`)
+\begin{equation}
+S = \frac{\text{size of the largest connected component}}
+{\text{size of the original graph}}
+\end{equation}
+
+Then the inequalities of nodes and link must be taken into account. This is a more complicated matter because there is not a single correct solution. The approach largely depends on the real world situation to be analysed. For example, to evaluate the robustness of a network to random equipment failures the nodes can be removed in a random order. On the other hand, to simulate a targeted attack scenario the nodes with highest degree can be removed first, assuming attackers will direct their action to cause the highest possible damage. Other node or link metrics can be used in the same way, to simulate other scenarios.
+
+Here different criteria have been used to gather a broad set of data. Specifically, nodes were first removed randomly with uniform probability, as in the classic percolation problem. Then they were removed following the order based on the following criterias.
+
+Degree
+  : The degree of a node is the number of edges connected to that node
+Betweenness centrality
+  : The beetweennes centrality of a node is the fraction of the shortest paths between any two other nodes that pass through that node
+Closeness centrality
+  : The closeness centrality of a node is the mean lenght of the shortest paths from that node to every other node
+Clustering coefficient
+  : TODO explanation
+
+## Analysed networks
+In addition to the three WCNs, some graph have been generated based on known random graph models.
+
+* Erd\H{o}s-Renyi random network (`fast_gnp_random_graph`)
 * Scale free network with a power law distribution (`barabasi_albert_graph`)
-
-### Computing strategies
-Different strategies have been used to test the robustness under different conditions. All the computations were done by removing nodes one at a time and computing the size of the giant cluster of the remaining graph. The order in which nodes were removed varied between strategies.
-
-#### Random removal
-The first strategy was to randomly select the order of the node removal, to simulate random independent failures of network components. This test was repeated 30 times per graph, with a different order each time.
-
-#### Ordered removal
-To simulate an attack on the most strategic nodes of the network, the nodes were removed ordered by different metrics, such as:
-
-* degree
-* betweenness centrality
-* closeness centrality
-* ratio of degree over clustering coefficient
-
-The metrics were calculated on the original graph and used to order the nodes. The metrics and the order were not updated after the removal of each node, in order to avoid increasing the complexity too much. For these metrics, only one test was done on each graph (since the order would not have changed anyway).
 
 # Message propagation analysis
 
