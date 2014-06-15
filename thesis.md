@@ -12,11 +12,21 @@ Wireless Community Networks, a particular kind of wireless mesh networks, have b
 
 This works provides an introduction to the topic of Wireless Community Networks and a description of the three networks which are subsequently analysed. Also provided is an introduction to OLSR, the routing protocol which is used in the analysed networks. The biggest part focuses on the analysis of some efficiency metrics for the chosen networks and a comparison with some well known random network models.
 
-## Ninux
+# Wireless Community Networks
+Wireless Community Networks (WCNs) have existed since 2000 and have gained popularity with the decrease of the cost for Wi-Fi equipment. The idea behind them is simple but powerful: leveraging Wi-Fi technology to create a network which is owned by citizens instead of corporations. The basic component of a WCN is the node, which usually consists of a router with some wireless interfaces attached. Most nodes have one or more directional interfaces to communicate with other nodes and some also have an omnidirectional interface to serve as an Access Point (AP).
 
-## FFWien
+Because of their nature of not asking permissions, it is difficult to determine precisely the number of active WCNs as there is no central registry to look at. However, there is a Wikipedia page^[@_list_2014] which, albeit incomplete, lists 262 WCNs at the time of writing. The dimensions of such networks are varied, from just a handful of nodes to nearly 25,000 as in Guifi^[http://guifi.net], which is probably the world's largest WCN.
 
-## FFGraz
+The three WCNs which are analysed later are Ninux, Funkeuer Wien and Funkfeuer Graz.
+
+### Ninux
+Ninux is the largest italian WCN. It was started in 2001 in Rome and now consists of about 250 active nodes, located in different "Ninux islands" all over Italy.
+
+OLSR is used as the routing protocol inside islands.
+
+### FFWien
+
+### FFGraz
 
 # OLSR summary
 
