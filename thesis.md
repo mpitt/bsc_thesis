@@ -8,8 +8,9 @@ bibliography: thesis.bib
 \chapterstyle{section}
 
 # Introduction
+Wireless Community Networks, a particular kind of wireless mesh networks, have become more and more popular in recent years. Their peculiar nature of self-organizing networks requires a tailored analysis, given the complexity of topologies that can arise. Much research effort is being dedicated to the development of new routing protocols for this networks and for measuring their efficiency.
 
-# Wireless community networks
+This works provides an introduction to the topic of Wireless Community Networks and a description of the three networks which are subsequently analysed. Also provided is an introduction to OLSR, the routing protocol which is used in the analysed networks. The biggest part focuses on the analysis of some efficiency metrics for the chosen networks and a comparison with some well known random network models.
 
 ## Ninux
 
