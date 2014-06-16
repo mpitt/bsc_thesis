@@ -225,6 +225,15 @@ if __name__  == "__main__":
         graphs["pref_att"] = []
         for test in range(numtests):
             graphs["pref_att"].append(nx.barabasi_albert_graph(nodes, m=barabasi_m))
+    if graphModes == "wcn" or graphModes == "all":
+        try:
+            f = open("../simpleCN-50.pickle")
+        except IOError:
+            print("file ../simpleCN-50.pickle")
+            raise
+        else:
+            graphs.update(pk.load(f))
+            f.close()
     if graphModes == "known":
         try:
             f=open("known.pickle")
