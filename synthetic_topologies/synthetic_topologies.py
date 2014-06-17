@@ -78,19 +78,21 @@ class dataParser():
                 initial = len(G.nodes())
             else:
                 initial = len (G.edges())
-            r = self.computeRobustness(
+            r, confidence = self.computeRobustness(
                 G,
                 tests=30,
                 remove=self.strategyRemove,
-                order=self.strategyOrder)[0]
+                order=self.strategyOrder)[0:1]
         for k,v in r.items():
             percent = int(100*float(k)/initial)
             avgRobustness[percent].append(v)
       
         retval = {}
-        retval["x"] = avgRobustness.keys()
-        retval["y"] = \
-            [np.average(avgRobustness[k]) for k in sorted(avgRobustness.keys())]
+        #retval["x"] = avgRobustness.keys()
+        #retval["y"] = \
+        #    [np.average(avgRobustness[k]) for k in sorted(avgRobustness.keys())]
+        retval["x"], retval["y"] = r
+        retval["CI"] = confidence
         q.put(retval)
 
     def computeRobustness(self, graph, tests=100, remove="nodes", order="random"):
@@ -155,15 +157,25 @@ class dataParser():
                     mainNonCSize[k].append(np.average(compSizes)/itemlen)
 
         mainCSizeAvg = {}
+        mainCSizeCI = {}
         for k, tests in mainCSize.items():
-            mainCSizeAvg[k] = np.average(tests)
-        return mainCSizeAvg, mainNonCSize
+            mainCSizeAvg[k] = np.mean(tests)
+            mainCSizeCI[k] = self.conf_interval_95(tests)
+        return mainCSizeAvg, mainCSizeCI, mainNonCSize
+
+    def conf_interval_95(self, data):
+        x = np.mean(data)
+        n = len(data)
+        sdev = np.std(data)
+        serr = sdev/sqrt(n)
+        return 1.96*serr
 
 class dataPlot:
 
     def __init__(self, C=None):
         self.x = []
         self.y = []
+        self.yCI = []
         self.title = ""
         self.xAxisLabel = ""
         self.yAxisLabel = ""
@@ -183,6 +195,8 @@ class dataPlot:
         for y in self.y:
             l = self.y[dataDimension][1]
             v = self.y[dataDimension][0]
+            ci = self.yCI[dataDimension]
+            errors = self.errors((v, ci))
             if l != "": 
                 ax.plot(self.x[dataDimension],
                     v, style, label=l)
@@ -210,6 +224,13 @@ class dataPlot:
             )
         plt.savefig(self.outFile+self.fileType)
         plt.clf()
+
+    def errors(self, data):
+        res = []
+        for v, ci in data:
+            res.append(v-ci[0], ci[1]-v)
+        return res
+
 
 if __name__  == "__main__":
     os.mkdir(resultDir)
@@ -311,9 +332,11 @@ if __name__  == "__main__":
             plot.outFile = resultDir+"/degree_distribution"
             plot.plotData(style="o")
         else:
+            for mode in val.keys():
+                plot.yCI.append((val[mode]["CI"], mode))
             plot.title = "Robustness metrics with "+s
             plot.xAxisLabel = "Fraction of failed links/nodes"
             plot.yAxisLabel = "Main cluster size / initial size"
             plot.legendPosition = "lower left"
             plot.outFile = resultDir+"/"+s+"_robustness"
-            plot.plotData(style=".")
+            plot.plotData(style="o")
