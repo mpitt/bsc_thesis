@@ -22,7 +22,7 @@ gnp_random_p = 0.02
 barabasi_m = 2
 
 verbose = 2 # [3:debug|2:info|1:warning|0:error] 
-graphModes = "known" # [all|random|pref_att|known]
+graphModes = "all" # [all|random|pref_att|known]
 #nodeStrategy = "random" # [all|random|deg|bet|close|cluster|none]
 #linkStrategy = "none" # [all|random|bet|none]
 
@@ -136,11 +136,12 @@ class dataParser():
         nlen = float(len(graph.nodes()))
         mainCSize = defaultdict(list)
         mainNonCSize = defaultdict(list)
+        fractionToRemove = 0.25
         for i in range(tests):
             if order == "random":
                 random.shuffle(items)
             purgedGraph = graph.copy()
-            for k in range(int(itemlen*0.8)):
+            for k in range(int(itemlen*fractionToRemove)):
                 if remove == "nodes":
                     purgedGraph.remove_node(items[k])
                 else:
@@ -315,4 +316,4 @@ if __name__  == "__main__":
             plot.yAxisLabel = "Main cluster size / initial size"
             plot.legendPosition = "lower left"
             plot.outFile = resultDir+"/"+s+"_robustness"
-            plot.plotData()
+            plot.plotData(style=".")
