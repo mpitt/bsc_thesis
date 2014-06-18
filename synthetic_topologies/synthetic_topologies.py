@@ -165,8 +165,7 @@ class dataParser():
         n = len(data)
         sdev = np.std(data)
         serr = sdev/np.sqrt(n)
-        #return 1.96*serr
-        return sdev
+        return 1.96*serr
 
 class dataPlot:
 
