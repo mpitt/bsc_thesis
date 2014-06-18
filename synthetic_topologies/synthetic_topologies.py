@@ -137,7 +137,7 @@ class dataParser():
         nlen = float(len(graph.nodes()))
         mainCSize = defaultdict(list)
         mainNonCSize = defaultdict(list)
-        fractionToRemove = 0.25
+        fractionToRemove = 0.2
         for i in range(tests):
             if order == "random":
                 random.shuffle(items)
@@ -177,6 +177,7 @@ class dataPlot:
         self.title = ""
         self.xAxisLabel = ""
         self.yAxisLabel = ""
+        self.xright = None
         self.outFile = ""
         self.key = []
         self.legendPosition = "center right"
@@ -201,6 +202,8 @@ class dataPlot:
             else:
                 ax.plot(x, y, style, **kwargs)
             dataDimension += 1
+        if self.xright != None:
+            ax.set_xlim(right=self.xright)
         plt.title(self.title)
         plt.xlabel(self.xAxisLabel)
         plt.ylabel(self.yAxisLabel)
@@ -319,6 +322,7 @@ if __name__  == "__main__":
                 plot.y.append(val[mode]["y"])
         if s == "degdist":
             plot.title = "Degree distribution"
+            plot.xright = 30
             plot.xAxisLabel = "Degree"
             plot.yAxisLabel = "Frequency"
             plot.legendPosition = "center right"
