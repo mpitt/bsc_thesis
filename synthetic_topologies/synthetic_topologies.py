@@ -1,4 +1,4 @@
-import sys, os, time
+import sys, os, time, errno
 import cPickle as pk
 from collections import defaultdict
 import numpy as np
@@ -226,12 +226,23 @@ class dataPlot:
         plt.savefig(self.outFile+self.fileType)
         plt.clf()
 
+def createResultDir(name):
+    c = 0
+    retry = True
+    while retry:
+        retry = False
+        try:
+            os.mkdir(name)
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                name = name+"-"+c
+                retry = True
+            else:
+                raise
+        c += 1
+
 if __name__  == "__main__":
-    os.mkdir(resultDir)
-    f = open(resultDir+"/options.txt", "w")
-    f.write("Graph dimension: "+str(nodes)+" nodes, "+str(numtests)+" graphs per topology\n")
-    f.write("Random generator, p="+str(gnp_random_p)+"\n")
-    f.write("Barabasi generator, m="+str(barabasi_m))
+    createResultDir(resultDir)
     graphs = {}
     if graphModes == "all" or graphModes == "random":
         graphs["random"] = []
