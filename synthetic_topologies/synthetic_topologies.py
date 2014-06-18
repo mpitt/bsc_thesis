@@ -39,10 +39,6 @@ class dataParser():
 
     def run(self, data):
         self.data = data
-        print "Subprocess starting, removing "+\
-            self.strategyRemove+\
-            " in order of "\
-            + self.strategyOrder
         if self.degDist:
             self.getDegreeDistribution()
         else:
@@ -73,25 +69,28 @@ class dataParser():
   
     def getRobustness(self):
         avgRobustness = defaultdict(list)
+        results = []
+        confidence = []
         for G in self.data:
             if self.strategyRemove == "nodes":
                 initial = len(G.nodes())
             else:
                 initial = len (G.edges())
-            r, confidence = self.computeRobustness(
+            r = self.computeRobustness(
                 G,
                 tests=30,
                 remove=self.strategyRemove,
-                order=self.strategyOrder)[0:1]
-        for k,v in r.items():
-            percent = int(100*float(k)/initial)
-            avgRobustness[percent].append(v)
+                order=self.strategyOrder)[0]
+            for k,v in r.items():
+                percent = int(100*float(k)/initial)
+                avgRobustness[percent].append(v)
+
+        confidence = [self.conf_interval_95(v) for v in avgRobustness.values()]
       
         retval = {}
-        #retval["x"] = avgRobustness.keys()
-        #retval["y"] = \
-        #    [np.average(avgRobustness[k]) for k in sorted(avgRobustness.keys())]
-        retval["x"], retval["y"] = r
+        retval["x"] = avgRobustness.keys()
+        retval["y"] = \
+            [np.average(avgRobustness[k]) for k in sorted(avgRobustness.keys())]
         retval["CI"] = confidence
         q.put(retval)
 
@@ -157,18 +156,17 @@ class dataParser():
                     mainNonCSize[k].append(np.average(compSizes)/itemlen)
 
         mainCSizeAvg = {}
-        mainCSizeCI = {}
         for k, tests in mainCSize.items():
             mainCSizeAvg[k] = np.mean(tests)
-            mainCSizeCI[k] = self.conf_interval_95(tests)
-        return mainCSizeAvg, mainCSizeCI, mainNonCSize
+        return mainCSizeAvg, mainNonCSize
 
     def conf_interval_95(self, data):
         x = np.mean(data)
         n = len(data)
         sdev = np.std(data)
-        serr = sdev/sqrt(n)
-        return 1.96*serr
+        serr = sdev/np.sqrt(n)
+        #return 1.96*serr
+        return sdev
 
 class dataPlot:
 
@@ -176,6 +174,7 @@ class dataPlot:
         self.x = []
         self.y = []
         self.yCI = []
+        self.series_labels = []
         self.title = ""
         self.xAxisLabel = ""
         self.yAxisLabel = ""
@@ -192,16 +191,16 @@ class dataPlot:
             return
         dataDimension = 0
         ax = plt.subplot(111)
-        for y in self.y:
-            l = self.y[dataDimension][1]
-            v = self.y[dataDimension][0]
-            ci = self.yCI[dataDimension]
-            errors = self.errors((v, ci))
-            if l != "": 
-                ax.plot(self.x[dataDimension],
-                    v, style, label=l)
-            else :
-                ax.plot(self.x[dataDimension], v, style)
+        for i in self.y:
+            l = self.series_labels[dataDimension]
+            y = self.y[dataDimension]
+            x = self.x[dataDimension]
+            kwargs = {'label': l}
+            if self.yCI != []:
+                ci = self.yCI[dataDimension]
+                ax.errorbar(x, y, yerr=ci, fmt=style, **kwargs)
+            else:
+                ax.plot(x, y, style, **kwargs)
             dataDimension += 1
         plt.title(self.title)
         plt.xlabel(self.xAxisLabel)
@@ -224,13 +223,6 @@ class dataPlot:
             )
         plt.savefig(self.outFile+self.fileType)
         plt.clf()
-
-    def errors(self, data):
-        res = []
-        for v, ci in data:
-            res.append(v-ci[0], ci[1]-v)
-        return res
-
 
 if __name__  == "__main__":
     os.mkdir(resultDir)
@@ -283,15 +275,16 @@ if __name__  == "__main__":
 #    elif linkStrategy != "none":
 #        strategies.append("links_"+linkStrategy)
   
-    if verbose >= 3:
+    if verbose >= 2:
         print "Graph modes"
         print graphs.keys()
+        print "Strategies: "
+        print strategies
+    if verbose >= 3:
         print "Random graphs (nodes, links): "
         print [(len(G.nodes()),len(G.edges())) for G in graphs["random"]]
         print "Preferential attachment graphs (nodes, links): "
         print [(len(G.nodes()),len(G.edges())) for G in graphs["pref_att"]]
-        print "Strategies: "
-        print strategies
   
     parsers = []
     for s in strategies:
@@ -322,8 +315,9 @@ if __name__  == "__main__":
         plot = dataPlot()
         for mode in graphs:
             if mode in val:
+                plot.series_labels.append(mode)
                 plot.x.append(val[mode]["x"])
-                plot.y.append((val[mode]["y"], mode))
+                plot.y.append(val[mode]["y"])
         if s == "degdist":
             plot.title = "Degree distribution"
             plot.xAxisLabel = "Degree"
@@ -332,8 +326,9 @@ if __name__  == "__main__":
             plot.outFile = resultDir+"/degree_distribution"
             plot.plotData(style="o")
         else:
-            for mode in val.keys():
-                plot.yCI.append((val[mode]["CI"], mode))
+            for mode in graphs:
+                if mode in val:
+                    plot.yCI.append(val[mode]["CI"])
             plot.title = "Robustness metrics with "+s
             plot.xAxisLabel = "Fraction of failed links/nodes"
             plot.yAxisLabel = "Main cluster size / initial size"
