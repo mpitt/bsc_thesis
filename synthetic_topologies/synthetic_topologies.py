@@ -278,6 +278,15 @@ if __name__  == "__main__":
         else:
             graphs = pk.load(f)
             f.close()
+    statfile = open(resultDir+"/stat.txt", "w")
+    for mode, cases in graphs.items():
+        statfile.write(mode+" graphs: ")
+        nodes, edges = getGraphModeStats(cases)
+        avgDeg = float(edges)/float(nodes)
+        statfile.write(str(nodes)+" nodes, ")
+        statfile.write(str(edges)+" edges, ")
+        statfile.write("<k> = "+str(avgDeg))
+        statfile.write("\n")
     
     strategies = [
             "nodes_random",
