@@ -22,9 +22,9 @@ gnp_random_p = 0.02
 barabasi_m = 2
 
 verbose = 2 # [3:debug|2:info|1:warning|0:error] 
-#nodeStrategy = "random" # [all|random|deg|bet|close|cluster|none]
-#linkStrategy = "none" # [all|random|bet|none]
 graphModes = "all" # [all|e-r|pref_att|known]
+nodeStrategy = "all" # [all|random|deg|bet|close|cluster|none]
+linkStrategy = "all" # [all|random|bet|none]
 
 class dataParser():
     strategyRemove = ""
@@ -288,18 +288,17 @@ if __name__  == "__main__":
         statfile.write("<k> = "+str(avgDeg))
         statfile.write("\n")
     
-    strategies = [
-            "nodes_random",
-            "nodes_deg",
-            "nodes_bet",
-            "degdist"
-            ]
+    strategies = ['degdist',
+        'nodes_random',
+        'nodes_deg',
+        'nodes_bet',
+        'nodes_close']
 #    if nodeStrategy == "all":
 #        for s in ["random", "deg", "bet", "close", "cluster"]:
 #            strategies.append("nodes_"+s)
 #    elif nodeStrategy != "none":
 #        strategies.append("nodes_"+nodeStrategy)
-  
+# 
 #    if linkStrategy == "all":
 #        for s in ["random", "bet"]:
 #            strategies.append("links_"+s)
