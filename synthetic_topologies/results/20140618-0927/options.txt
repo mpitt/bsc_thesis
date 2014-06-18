@@ -1,0 +1,3 @@
+Graph dimension: 500 nodes, 30 graphs per topology
+Random generator, p=0.02
+Barabasi generator, m=2
