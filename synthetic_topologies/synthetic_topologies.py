@@ -22,9 +22,9 @@ gnp_random_p = 0.02
 barabasi_m = 2
 
 verbose = 2 # [3:debug|2:info|1:warning|0:error] 
-graphModes = "all" # [all|random|pref_att|known]
 #nodeStrategy = "random" # [all|random|deg|bet|close|cluster|none]
 #linkStrategy = "none" # [all|random|bet|none]
+graphModes = "all" # [all|e-r|pref_att|known]
 
 class dataParser():
     strategyRemove = ""
@@ -241,13 +241,22 @@ def createResultDir(name):
                 raise
         c += 1
 
+def getGraphModeStats(graphs):
+    l = len(graphs)
+    n = 0
+    m = 0
+    for g in graphs:
+        n += len(g)
+        m += len(g.edges())
+    return n/l, m/l
+ 
 if __name__  == "__main__":
     createResultDir(resultDir)
     graphs = {}
-    if graphModes == "all" or graphModes == "random":
-        graphs["random"] = []
+    if graphModes == "all" or graphModes == "e-r":
+        graphs["e-r"] = []
         for test in range(numtests):
-            graphs["random"].append(nx.fast_gnp_random_graph(nodes, p=gnp_random_p))
+            graphs["e-r"].append(nx.fast_gnp_random_graph(nodes, p=gnp_random_p))
     if graphModes == "all" or graphModes == "pref_att":
         graphs["pref_att"] = []
         for test in range(numtests):
@@ -294,8 +303,8 @@ if __name__  == "__main__":
         print "Strategies: "
         print strategies
     if verbose >= 3:
-        print "Random graphs (nodes, links): "
-        print [(len(G.nodes()),len(G.edges())) for G in graphs["random"]]
+        print "e-r graphs (nodes, links): "
+        print [(len(G.nodes()),len(G.edges())) for G in graphs["e-r"]]
         print "Preferential attachment graphs (nodes, links): "
         print [(len(G.nodes()),len(G.edges())) for G in graphs["pref_att"]]
   
