@@ -54,27 +54,35 @@ class MessagePropagation:
         while len(q) > 0:
             u,v = q.popleft()
             n = random.random()
-            if (self.forward_message(u, v, received_message)):
+            if (self.process_message(u, v, received_message)):
                 received_message.add(v)
                 for i in message['content']:
                     route_knowledge.add((i,v))
-                for w in self.graph[v].keys():
-                    if w != u:
-                        q.append((v,w))
+                if (self.forward_message(u, v)):
+                    for w in self.graph[v].keys():
+                        if w != u:
+                            q.append((v,w))
         return route_knowledge
 
-    def forward_message(self, u, v, received_message):
+    def process_message(self, u, v, received_message):
         n = random.random()
-        if n >= self.graph[u][v]['weight']:
+        if n <= self.graph[u][v]['weight']:
             # The link failed
             return False
         if v in received_message:
             # The message was already processed by v
             return False
-        if (self.mode == "mpr"
-                and v not in list(self.mprSolution[u])[0]):
+        return True
+
+    def forward_message(self, u, v):
+        if (self.mode == "mpr"):
+                #and v not in list(self.mprSolution[u])[0]):
+            isMPR = False
+            for solution in self.mprSolution[u]:
+                if v in solution: isMPR = True
+            if not isMPR:
             # v is not selected as an MPR of u
-            return False
+                return False
         return True
 
 class ResultFile:
