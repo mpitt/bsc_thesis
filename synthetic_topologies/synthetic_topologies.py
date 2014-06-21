@@ -1,4 +1,6 @@
-import sys, os, time, errno
+import os
+import time
+import errno
 import cPickle as pk
 from collections import defaultdict
 import numpy as np
@@ -8,23 +10,22 @@ matplotlib.use('Agg')
 matplotlib.rcParams['figure.figsize'] = 12, 12 
 matplotlib.rcParams['figure.dpi'] = 1200
 import matplotlib.pyplot as plt
-from matplotlib import rcParams
 from multiprocessing import Process, Queue
-from scipy import stats, optimize
+from scipy import optimize
 import random
 from string import split
-import pdb
 
-resultDir = "results/"+time.strftime("%Y%m%d-%H%M") # 20141225-1453
+resultDir = "results/" + time.strftime("%Y%m%d-%H%M")  # 20141225-1453
 numtests = 30
 nodes = 500
 gnp_random_p = 0.02
 barabasi_m = 2
 
-verbose = 2 # [3:debug|2:info|1:warning|0:error] 
-graphModes = "all" # [all|e-r|pref_att|known]
-nodeStrategy = "all" # [all|random|deg|bet|close|cluster|none]
-linkStrategy = "all" # [all|random|bet|none]
+verbose = 2  # [3:debug|2:info|1:warning|0:error]
+graphModes = "all"  # [all|e-r|pref_att|known]
+nodeStrategy = "all"  # [all|random|deg|bet|close|cluster|none]
+linkStrategy = "all"  # [all|random|bet|none]
+
 
 class dataParser():
     strategyRemove = ""
@@ -57,44 +58,48 @@ class dataParser():
         y = degreeDistribution.values()
 
         fitfunc = lambda p, x: p[0] * x ** (p[1])
-        errfunc = lambda p, x, y: (y - fitfunc(p,x))
+        errfunc = lambda p, x, y: (y - fitfunc(p, x))
 
-        out,success = optimize.leastsq(
-                errfunc,
-                [1,-1],
-                args=(x,y)
-                )
-        fittedValue = [out[0]*(v**out[1]) for v in x]
+        out, success = optimize.leastsq(
+            errfunc,
+            [1, -1],
+            args=(x, y)
+        )
+        fittedValue = [out[0] * (v ** out[1]) for v in x]
         q.put({"x": x, "y": y})
   
     def getRobustness(self):
         avgRobustness = defaultdict(list)
-        results = []
-        confidence = []
         for G in self.data:
             if self.strategyRemove == "nodes":
                 initial = len(G.nodes())
             else:
-                initial = len (G.edges())
+                initial = len(G.edges())
             r = self.computeRobustness(
                 G,
                 tests=30,
                 remove=self.strategyRemove,
                 order=self.strategyOrder)[0]
-            for k,v in r.items():
-                percent = int(100*float(k)/initial)
+            for k, v in r.items():
+                percent = int(100 * float(k) / initial)
                 avgRobustness[percent].append(v)
 
         confidence = [self.conf_interval_95(v) for v in avgRobustness.values()]
       
         retval = {}
         retval["x"] = avgRobustness.keys()
-        retval["y"] = \
-            [np.average(avgRobustness[k]) for k in sorted(avgRobustness.keys())]
+        retval["y"] = [
+            np.average(avgRobustness[k]) for k in sorted(avgRobustness.keys())]
         retval["CI"] = confidence
         q.put(retval)
 
-    def computeRobustness(self, graph, tests=100, remove="nodes", order="random"):
+    def computeRobustness(
+        self,
+        graph,
+        tests=100,
+        remove="nodes",
+        order="random"
+    ):
 
         if remove == "nodes":
             if order == "random":
@@ -118,8 +123,9 @@ class dataParser():
                     if d[n] < 2:
                         DCratio[n] = 0
                     else:
-                        DCratio[n] = (2*T[n])/(d[n]-1)
-                items = sorted(graph.nodes(), key=lambda n: DCratio[n], reverse=True)
+                        DCratio[n] = (2 * T[n]) / (d[n] - 1)
+                items = sorted(graph.nodes(),
+                               key=lambda n: DCratio[n], reverse=True)
             else:
                 print "=== ERROR, order not valid"
                 return
@@ -142,18 +148,18 @@ class dataParser():
             if order == "random":
                 random.shuffle(items)
             purgedGraph = graph.copy()
-            for k in range(int(itemlen*fractionToRemove)):
+            for k in range(int(itemlen * fractionToRemove)):
                 if remove == "nodes":
                     purgedGraph.remove_node(items[k])
                 else:
                     purgedGraph.remove_edge(*items[k])
-                compList =  nx.connected_components(purgedGraph)
-                mainCSize[k].append(float(len(compList[0]))/nlen)
+                compList = nx.connected_components(purgedGraph)
+                mainCSize[k].append(float(len(compList[0])) / nlen)
                 compSizes = [len(r) for r in compList[1:]]
                 if len(compSizes) == 0:
                     mainNonCSize[k].append(0)
                 else:
-                    mainNonCSize[k].append(np.average(compSizes)/itemlen)
+                    mainNonCSize[k].append(np.average(compSizes) / itemlen)
 
         mainCSizeAvg = {}
         for k, tests in mainCSize.items():
@@ -161,11 +167,11 @@ class dataParser():
         return mainCSizeAvg, mainNonCSize
 
     def conf_interval_95(self, data):
-        x = np.mean(data)
         n = len(data)
         sdev = np.std(data)
-        serr = sdev/np.sqrt(n)
-        return 1.96*serr
+        serr = sdev / np.sqrt(n)
+        return 1.96 * serr
+
 
 class dataPlot:
 
@@ -181,12 +187,12 @@ class dataPlot:
         self.outFile = ""
         self.key = []
         self.legendPosition = "center right"
-        if C == None:
+        if C is None:
             self.fileType = ".png"
         else:
-            self.fileType = "."+C.imageExtension
+            self.fileType = "." + C.imageExtension
 
-    def plotData(self, style = "-"):
+    def plotData(self, style="-"):
         if self.outFile == "":
             return
         dataDimension = 0
@@ -202,7 +208,7 @@ class dataPlot:
             else:
                 ax.plot(x, y, style, **kwargs)
             dataDimension += 1
-        if self.xright != None:
+        if self.xright is not None:
             ax.set_xlim(right=self.xright)
         plt.title(self.title)
         plt.xlabel(self.xAxisLabel)
@@ -210,12 +216,12 @@ class dataPlot:
         if self.legendPosition == "aside":
             box = ax.get_position()
             ax.set_position([box.x0,
-                box.y0,
-                box.width * 0.8,
-                box.height])
+                             box.y0,
+                             box.width * 0.8,
+                             box.height])
             ax.legend(loc="center left", fancybox=True, 
-                bbox_to_anchor=(1, 0.5), shadow=True, 
-                prop={'size':15}, numpoints=1)
+                      bbox_to_anchor=(1, 0.5), shadow=True, 
+                      prop={'size': 15}, numpoints=1)
         else: 
             plt.legend(
                 loc=self.legendPosition,
@@ -223,8 +229,9 @@ class dataPlot:
                 shadow=True,
                 numpoints=1
             )
-        plt.savefig(self.outFile+self.fileType)
+        plt.savefig(self.outFile + self.fileType)
         plt.clf()
+
 
 def createResultDir(name):
     c = 0
@@ -235,11 +242,12 @@ def createResultDir(name):
             os.mkdir(name)
         except OSError as e:
             if e.errno == errno.EEXIST:
-                name = name+"-"+c
+                name = name + "-" + c
                 retry = True
             else:
                 raise
         c += 1
+
 
 def getGraphModeStats(graphs):
     l = len(graphs)
@@ -248,19 +256,22 @@ def getGraphModeStats(graphs):
     for g in graphs:
         n += len(g)
         m += len(g.edges())
-    return n/l, m/l
+    return n / l, m / l
+
  
-if __name__  == "__main__":
+if __name__ == "__main__":
     createResultDir(resultDir)
     graphs = {}
     if graphModes == "all" or graphModes == "e-r":
         graphs["e-r"] = []
         for test in range(numtests):
-            graphs["e-r"].append(nx.fast_gnp_random_graph(nodes, p=gnp_random_p))
+            graphs["e-r"].append(
+                nx.fast_gnp_random_graph(nodes, p=gnp_random_p))
     if graphModes == "all" or graphModes == "pref_att":
         graphs["pref_att"] = []
         for test in range(numtests):
-            graphs["pref_att"].append(nx.barabasi_albert_graph(nodes, m=barabasi_m))
+            graphs["pref_att"].append(
+                nx.barabasi_albert_graph(nodes, m=barabasi_m))
     if graphModes == "wcn" or graphModes == "all":
         try:
             f = open("../simpleCN-50.pickle")
@@ -272,23 +283,24 @@ if __name__  == "__main__":
             f.close()
     if graphModes == "known":
         try:
-            f=open("known.pickle")
+            f = open("known.pickle")
         except IOError:
             print("File not found")
         else:
             graphs = pk.load(f)
             f.close()
-    statfile = open(resultDir+"/stat.txt", "w")
+    statfile = open(resultDir + "/stat.txt", "w")
     for mode, cases in graphs.items():
-        statfile.write(mode+" graphs: ")
+        statfile.write(mode + " graphs: ")
         nodes, edges = getGraphModeStats(cases)
-        avgDeg = float(edges)/float(nodes)
-        statfile.write(str(nodes)+" nodes, ")
-        statfile.write(str(edges)+" edges, ")
-        statfile.write("<k> = "+str(avgDeg))
+        avgDeg = float(edges) / float(nodes)
+        statfile.write(str(nodes) + " nodes, ")
+        statfile.write(str(edges) + " edges, ")
+        statfile.write("<k> = " + str(avgDeg))
         statfile.write("\n")
     
-    strategies = ['degdist',
+    strategies = [
+        'degdist',
         'nodes_random',
         'nodes_deg',
         'nodes_bet',
@@ -312,9 +324,9 @@ if __name__  == "__main__":
         print strategies
     if verbose >= 3:
         print "e-r graphs (nodes, links): "
-        print [(len(G.nodes()),len(G.edges())) for G in graphs["e-r"]]
+        print [(len(G.nodes()), len(G.edges())) for G in graphs["e-r"]]
         print "Preferential attachment graphs (nodes, links): "
-        print [(len(G.nodes()),len(G.edges())) for G in graphs["pref_att"]]
+        print [(len(G.nodes()), len(G.edges())) for G in graphs["pref_att"]]
   
     parsers = []
     for s in strategies:
@@ -354,15 +366,15 @@ if __name__  == "__main__":
             plot.xAxisLabel = "Degree"
             plot.yAxisLabel = "Frequency"
             plot.legendPosition = "center right"
-            plot.outFile = resultDir+"/degree_distribution"
+            plot.outFile = resultDir + "/degree_distribution"
             plot.plotData(style="o")
         else:
             for mode in graphs:
                 if mode in val:
                     plot.yCI.append(val[mode]["CI"])
-            plot.title = "Robustness metrics with "+s
+            plot.title = "Robustness metrics with " + s
             plot.xAxisLabel = "Fraction of failed links/nodes"
             plot.yAxisLabel = "Main cluster size / initial size"
             plot.legendPosition = "lower left"
-            plot.outFile = resultDir+"/"+s+"_robustness"
+            plot.outFile = resultDir + "/" + s + "_robustness"
             plot.plotData(style="o")
