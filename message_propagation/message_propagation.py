@@ -17,10 +17,23 @@ class MessagePropagation:
         self.mode = mode
 
     def run(self, times=1000):
-        T = [0 for u in self.graph]
-        R = [0 for u in self.graph]
-        routes_from = [set([(u,v) for v in self.graph if v != u]) for u in self.graph]
-        routes_to = [set([(v,u) for v in self.graph if v != u]) for u in self.graph]
+        # T = [0 for u in self.graph]
+        # R = [0 for u in self.graph]
+        # routes_from = [set([(u, v) for v in self.graph if v != u])
+        #                for u in self.graph]
+        # routes_to = [set([(v, u) for v in self.graph if v != u])
+        #              for u in self.graph]
+        T = defaultdict(float)
+        R = defaultdict(float)
+        routes_to = defaultdict(set)
+        routes_from = defaultdict(set)
+        for u in self.graph:
+            T[u] = 0
+            R[u] = 0
+            for v in self.graph:
+                if v != u:
+                    routes_from[u].add((u, v))
+                    routes_to[u].add((v, u))
         if self.mode == "mpr":
             self.mprSolution = mpr.solveMPRProblem(self.graph)
             originatorSet = set()
@@ -40,8 +53,8 @@ class MessagePropagation:
                     T[u] += 1
                 if routes_to[u] <= known_routes:
                     R[u] += 1
-        T = [float(u) / times for u in T]
-        R = [float(u) / times for u in R]
+        T = [float(u) / times for u in T.values()]
+        R = [float(u) / times for u in R.values()]
         return T, R
 
     def propagate(self, u):
