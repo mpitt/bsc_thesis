@@ -28,17 +28,29 @@ if __name__ == "__main__":
             fd.close()
 
     average = {
-        "T": defaultdict(list),
-        "R": defaultdict(list)
+        "T": defaultdict(lambda: np.array([])),
+        "R": defaultdict(lambda: np.array([]))
+    }
+    stdev = {
+        "T": defaultdict(lambda: np.array([])),
+        "R": defaultdict(lambda: np.array([]))
     }
     for direction in raw.keys():
         for mode in raw[direction].keys():
-            average[direction][mode] = \
+            average[direction][mode] = np.array(
                 [np.average(ulist) for ulist in raw[direction][mode].values()]
+            )
+            stdev[direction][mode] = np.copy(average[direction][mode])
+            for i in average[direction][mode].argsort():
+                stdev[direction][mode][i] = np.std(raw[direction][mode][i])
+            average[direction][mode].sort()
 
-    print average
     for dname, direction in average.items():
         for mname, mode in direction.items():
-            plt.hist(mode, bins=50, normed=True)
+            plt.errorbar(
+                range(len(mode)), mode,
+                yerr=stdev[dname][mname],
+                ecolor='grey')
+            plt.ylim(0, max(mode))
             plt.savefig(args.testcase + dname + "-" + mname + ".png")
             plt.clf()
