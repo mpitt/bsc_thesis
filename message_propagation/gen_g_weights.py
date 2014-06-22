@@ -8,6 +8,7 @@ import argparse
 if __name__ == '__main__':
     generators = {
         'random': nx.fast_gnp_random_graph,
+        'ba': nx.barabasi_albert_graph,
         'path': nx.path_graph,
         'complete': nx.complete_graph
     }
@@ -15,6 +16,7 @@ if __name__ == '__main__':
     parser.add_argument("generator", choices=generators.keys())
     parser.add_argument("-n", "--nodes", type=int, required=True)
     parser.add_argument("-p", "--gnpp", type=float)
+    parser.add_argument("-m", "--edges", type=int)
     parser.add_argument(
         "-w",
         "--maxweight", type=float,
@@ -31,6 +33,11 @@ if __name__ == '__main__':
         g = generators[gen](args.nodes, args.gnpp)
         while(len(nx.connected_components(g)) > 1):
             g = generators[gen](args.nodes, args.gnpp)
+    elif gen == 'ba':
+        if args.edges is None:
+            print "Error: -m is required with the Barabasi-Albert generator"
+            sys.exit(2)
+        g = generators[gen](args.nodes, args.edges)
     else:
         g = generators[gen](args.nodes)
 
