@@ -109,11 +109,11 @@ class ResultFile:
         self.basename = basename
         l = []
         for f in os.listdir(directory):
-            match = re.match("{}-(?P<num>\d+)".format(basename), f)
+            match = re.match(r"{}-(?P<num>[\d]+)".format(basename), f)
             if match:
-                l.append(match.group('num'))
+                l.append(int(match.group('num')))
         if len(l) > 0:
-            new = int(sorted(l)[-1]) + 1
+            new = sorted(l)[-1] + 1
         else:
             new = 0
         self.path = "{dir}/{name}-{num}".format(dir=directory,
