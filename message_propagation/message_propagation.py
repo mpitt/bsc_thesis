@@ -25,11 +25,16 @@ class MessagePropagation:
         #              for u in self.graph]
         T = defaultdict(float)
         R = defaultdict(float)
+        Tc = defaultdict(float)
+        Rc = defaultdict(float)
+        nlen = len(self.graph)
         routes_to = defaultdict(set)
         routes_from = defaultdict(set)
         for u in self.graph:
             T[u] = 0
             R[u] = 0
+            Tc[u] = 0
+            Rc[u] = 0
             for v in self.graph:
                 if v != u:
                     routes_from[u].add((u, v))
@@ -45,17 +50,34 @@ class MessagePropagation:
         for i in range(times):
             # each node initially only knows itself
             known_routes = set([(u, u) for u in self.graph])
+            tc = defaultdict(int)
+            rc = defaultdict(int)
+            for u in self.graph:
+                tc[u] = 0
+                rc[u] = 0
             for u in originators:
                 rk = self.propagate(u)
                 known_routes = known_routes.union(rk)
+            for u, v in known_routes:
+                tc[u] += 1
+                rc[v] += 1
             for u in self.graph:
-                if routes_from[u] <= known_routes:
+                if tc[u] == nlen:
                     T[u] += 1
-                if routes_to[u] <= known_routes:
+                if rc[u] == nlen:
                     R[u] += 1
+                Tc[u] += tc[u]
+                Rc[u] += rc[u]
+            # for u in self.graph:
+            #     if routes_from[u] <= known_routes:
+            #         T[u] += 1
+            #     if routes_to[u] <= known_routes:
+            #         R[u] += 1
         T = [float(u) / times for u in T.values()]
         R = [float(u) / times for u in R.values()]
-        return T, R
+        Tc = [(float(u) / nlen) / times for u in Tc.values()]
+        Rc = [(float(u) / nlen) / times for u in Rc.values()]
+        return T, R, Tc, Rc
 
     def propagate(self, u):
         message = {}
@@ -107,19 +129,26 @@ class MessagePropagation:
 class ResultFile:
     def __init__(self, directory, basename):
         self.basename = basename
+        self.directory = "{}/runs".format(directory)
+
+    def __enter__(self):
         l = []
-        for f in os.listdir(directory):
-            match = re.match(r"{}-(?P<num>[\d]+)".format(basename), f)
+        for f in os.listdir(self.directory):
+            match = re.match(r"{}-(?P<num>[\d]+)".format(self.basename), f)
             if match:
                 l.append(int(match.group('num')))
         if len(l) > 0:
             new = sorted(l)[-1] + 1
         else:
             new = 0
-        self.path = "{dir}/{name}-{num}".format(dir=directory,
-                                                name=basename,
+        self.path = "{dir}/{name}-{num}".format(dir=self.directory,
+                                                name=self.basename,
                                                 num=new)
         self.fo = open(self.path, "w+")
+        return self.fo
+
+    def __exit__(self, etype, evalue, traceback):
+        self.fo.close()
 
 
 def strip_trailing_slash(string):
@@ -151,11 +180,15 @@ if __name__ == "__main__":
     #testname = re.search(r"(?P<file>[^/]*)$", args.testcase).group("name")
     res = mp.run()
     date = time.strftime("%Y%m%d-%H%M")
-    resFile = ResultFile(args.testcase, "T-{m}".format(m=args.mode)).fo
-    for u in res[0]:
-        resFile.write("%f\n" % u)
-    resFile.close()
-    resFile = ResultFile(args.testcase, "R-{m}".format(m=args.mode)).fo
-    for u in res[1]:
-        resFile.write("%f\n" % u)
-    resFile.close()
+    with ResultFile(args.testcase, "T-{m}".format(m=args.mode)) as f:
+        for u in res[0]:
+            f.write("%f\n" % u)
+    with ResultFile(args.testcase, "R-{m}".format(m=args.mode)) as f:
+        for u in res[1]:
+            f.write("%f\n" % u)
+    with ResultFile(args.testcase, "Tc-{m}".format(m=args.mode)) as f:
+        for u in res[2]:
+            f.write("%f\n" % u)
+    with ResultFile(args.testcase, "Rc-{m}".format(m=args.mode)) as f:
+        for u in res[3]:
+            f.write("%f\n" % u)
