@@ -82,13 +82,11 @@ Betweenness centrality
   : The beetweennes centrality of a node is the fraction of the shortest paths between any two other nodes that pass through that node
 Closeness centrality
   : The closeness centrality of a node is the mean lenght of the shortest paths from that node to every other node
-Clustering coefficient
-  : TODO explanation
 
 ## Analysed networks
 In addition to the three WCNs, some graph have been generated based on known random graph models. The chosen models, explained below, are the Erd\H{o}s-Rényi random model and the Barabási-Albert preferential attachment model. The reason for the choice is that a very different behaviour is expected with respect to the various robustness metrics, as described in [@albert_error_2000]. The goal is to compare the well known behaviour of these topologies to the real ones of the WCNs. The implementation of these models provided by NetworkX has been used.
 
-### Erd\H{o}s-Rényi random network
+### Erd\H{o}s-Rényi random graph
 (NetworkX generator: `fast_gnp_random_graph`)
 
 The random graph model originally proposed by Erd\H{o}s and Rényi is also called $G(n,M)$ model, since it consists in the uniform random selection of a graph from the set of all graphs with $n$ nodes and $M$ edges.
@@ -96,15 +94,55 @@ The random graph model originally proposed by Erd\H{o}s and Rényi is also calle
 The model used here is a variaton first introduced by [@gilbert_random_1959], called the $G(n,p)$ model.
 The algorithm starts form a graph with $n$ nodes and no edges. Then, for each unordered pair of nodes $\{i,j\} . i \neq j$, the edge $ij$ is added with probability $p$.
 
-The $G(n,p)$ models has some interesting properties which are not obvious at a first look. For example, the number of edges is not known as in the $G(n,M)$ models, but the expected number of edges can be determined to be $\binom{n}{2}p$
+The $G(n,p)$ models has some interesting properties which are not obvious at a first look. For example, the number of edges is not known as in the $G(n,M)$ models, but the expected number of edges can be determined to be $\binom{n}{2}p$. Another important aspect is connectedness: for 
+$p > \frac{(1+\epsilon) \ln n}{n}$
+the graph will almost surely be connected, while for
+$p < \frac{(1-\epsilon) \ln n}{n}$
+it will almost surely have isolated vertices.
+
+Finally, the degree distribution has the form
+
+\begin{equation*}
+%*
+P(k) = \binom{n-1}{k} p^k (1-p)^{n-1-k}
+\end{equation*}<!--*-->
 
 
-### Scale free network with a power law distribution
+### Barabási-Albert graph
 (NetworkX generator: `barabasi_albert_graph`)
 
 A scale free network is a network whose degree distribution follows a power law of the form $p_k = Ck^{-\alpha}$.
 
-A method for generating graphs with a power law degree distribution using a preferential attachment mechanism, was devised by A. L. Barabási and R. Albert in [@barabasi_emergence_1999]. This is the method implemented by NetworkX. Given a target number $n$ of nodes and a parametes $m$ which controls the density of the network, the algorithm starts from a graph with $m$ nodes and no edges. Then other nodes are added and from each new node $m$ edges are created. The new edges are attached preferentially to the nodes with higer degree. This continues until there are $n$ nodes in the graph, meaning the final graph will contain $(n-m) \cdot m$ edges.
+A method for generating graphs with a power law degree distribution, using a preferential attachment mechanism, was devised by A. L. Barabási and R. Albert in [@barabasi_emergence_1999]. This is the method implemented by NetworkX. Given a target number $n$ of nodes and a parametes $m$ which controls the density of the network, the algorithm starts from a graph with $m$ nodes and no edges. Then other nodes are added and from each new node $m$ edges are created. The new edges are attached preferentially to the nodes with higer degree. This continues until there are $n$ nodes in the graph, meaning the final graph will contain $(n-m) m$ edges.
+
+## Practical considerations
+To obtain meaningful results, the syntetic graphs need to be comparable with the real topologies at least in some aspects, the most obvious being average degree.
+In order to achive this, the parameters of the generators must be adjusted remembering that:
+
+* for the Erd\H{o}s-Rényi model, the expected average degree is 
+
+\begin{equation}
+\left< k \right> = \frac{2 \binom{n}{2} p}{n}
+= \frac{2}{n} \frac{n!}{2! (n-2)!} p
+= \frac{1}{n} \frac{(n)(n-1)(n-2)!}{(n-2)!} p = (n-1)p
+\end{equation}
+
+* for the Barabási-Albert model the exact average degree is known
+
+\begin{equation}
+\left< k \right> = \frac{2 (n-m)m}{n}
+\end{equation}
+
+In the second case, since $m \in \mathbb{N}$, the value of $\left< k \right>$ can not be controlled precisely once fixed $n$.
+
+## Results
+
+### Degree distributions
+
+![Degree distributions of the graphs](./synthetic_topologies/results/20140618-1529/degree_distribution.png)\ 
+
+As expected, the degree distributions of the three WCNs are quite similar to that of the Barabási-Albert graph, while the Erd\H{o}s-Rényi graph has a binomial distribution.
+
 
 # Message propagation analysis
 
