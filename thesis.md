@@ -8,27 +8,57 @@ bibliography: thesis.bib
 \chapterstyle{section}
 
 # Introduction
-Wireless Community Networks, a particular kind of wireless mesh networks, have become more and more popular in recent years. Their peculiar nature of self-organizing networks requires a tailored analysis, given the complexity of topologies that can arise. Much research effort is being dedicated to the development of new routing protocols for this networks and for measuring their efficiency.
+Wireless Community Networks (WCNs), a particular kind of wireless mesh networks, have become more and more popular in recent years. These networks are different from traditional ones in various aspects, such as the link nature and the arising topologies. For this reason, generic network protocols may not be well suited for WCNs and much research effort is being dedicated to the development of new routing protocols for this networks and for measuring their efficiency.
 
 This works provides an introduction to the topic of Wireless Community Networks and a description of the three networks which are subsequently analysed. Also provided is an introduction to OLSR, the routing protocol which is used in the analysed networks. The biggest part focuses on the analysis of some efficiency metrics for the chosen networks and a comparison with some well known random network models.
 
 # Wireless Community Networks
-Wireless Community Networks (WCNs) have existed since 2000 and have gained popularity with the decrease of the cost for Wi-Fi equipment. The idea behind them is simple but powerful: leveraging Wi-Fi technology to create a network which is owned by citizens instead of corporations. The basic component of a WCN is the node, which usually consists of a router with some wireless interfaces attached. Most nodes have one or more directional interfaces to communicate with other nodes and some also have an omnidirectional interface to serve as an Access Point (AP).
+Wireless Community Networks have existed since 2000 and have gained popularity with the decrease of the cost for Wi-Fi equipment. The idea behind them is simple but powerful: leveraging Wi-Fi technology to create a network which is owned by citizens instead of corporations. The basic component of a WCN is the node, which usually consists of a router with some wireless interfaces attached. Most nodes have one or more directional interfaces to communicate with other nodes and some also have an omnidirectional interface to serve as an Access Point (AP).
 
 Because of their nature of not asking permissions, it is difficult to determine precisely the number of active WCNs as there is no central registry to look at. However, there is a Wikipedia page^[@_list_2014] which, albeit incomplete, lists 262 WCNs at the time of writing. The dimensions of such networks are varied, from just a handful of nodes to nearly 25,000 as in Guifi^[http://guifi.net], which is probably the world's largest WCN.
 
-The three WCNs which are analysed later are Ninux, Funkeuer Wien and Funkfeuer Graz.
+The three WCNs which are analysed later are Ninux, Funkeuer Wien and Funkfeuer Graz. The study considers 50 snapshots of the networks taken from ... to ... <!--TODO-->.
 
-### Ninux
-Ninux is the largest italian WCN. It was started in 2001 in Rome and now consists of about 250 active nodes, located in different "Ninux islands" all over Italy.
+## Ninux
+Ninux^[http://wiki.ninux.org/] is the largest italian WCN. It was started in 2001 in Rome and now consists of about 250 active nodes, located in different "Ninux islands" all over Italy.
+The analysis considered only the biggest connected island, with 132 nodes and 154 links ($\left< k \right> \simeq 2.333$).
 
-OLSR is used as the routing protocol inside islands.
+OLSR is used as the routing protocol inside islands, while the islands are connected together using tunnels.
 
-### FFWien
+## FFWien
+FunkFeuer^[http://www.funkfeuer.at/] is the collective name of different WCNs in Austria. FunkFeuer Wien^[http://www.funkfeuer.at/Vienna.206.0.html?&L=1] (FFWien) is the biggest, with 237 nodes and 433 links ($\left< k \right> \simeq 3.654$) and it covers, according to the website, 1/3 of Wien (Vienna).
 
-### FFGraz
+## FFGraz
+FunkFeuer Graz^[http://graz.funkfeuer.at/] (FFGraz) is the "smaller sister" of the FFWien network, situated in the homonymous city. It consists of 144 nodes and 199 edges ($\left< k \right> \simeq 2.764$).
+
+Both FFWien and FFGraz also use OLSR as a routing protocol. It should be noted, however, that the versions of OLSR used in practice in WCNs do not behave exactly as the specification of the protocol mandates. The next section discusses both OLSR and the differences between the standard and the real cases.
 
 # OLSR summary
+Optimized Link State Routing (OLSR) is a link state routing protocol, standardized by the IEEE in RFC 3626^[@jacquet_optimized_2003] and designed to have a better performance on wireless mesh and ad-hoc networks than traditional protocols for wired networks. The most peculiar feature of OLSR is a more efficient flooding technique which allows to propagate topology information using a fraction of the traffic required by simple uncontrolled flooding. Reducing overhead traffic for routing is key in wireless networks where links can become congested easily and even more so in WCNs where the nodes are usually low-power devices.
+
+The key concept of OLSR is the use of multi-point relays (MPRs) to achieve a more efficient distribution of routing information. After each node selects its own MPRs between its neighbours, the other neighbours will not rebroadcast topology information from it. This means less processing load and less unnecessary traffic for the network. The selection of MPRs works in two steps: neighbourhood discovery and relay selection.
+
+In order to select its MPRs, a node must first know its 2-neighbourhood. This is achieved by receiving `HELLO` messages from the first neighbours, which communicate their respective neighbourhood. After receiving the `HELLO` messages of all its neighbours, a node knows its 1-neighbours, 2-neighbours and to which 2-neighbours every 1-neighbour is connected.
+
+Using this information, the node can select a set of its 1-neighbours such that every node in the 2-neighbourhood is at 1 hop from the set. Formally, call $N_1(u)$ the set of 1-neighbours, $N_2(u)$ the set of 2-neighbours, select $S(u) \subseteq N_1(u)$ such that
+
+\begin{equation*}
+%*
+\forall v \in N_2(u) \. \exists s \in S(u) \text{ st. } v \in N_1(s)
+\end{equation*}<!--*-->
+
+This requirement essentially means that each node in the strict 2-hop neighbourhood can be reached through a MPR. The protocol specification suggests that the MPR set of each node should be as small as possible, but does not require it. Once a node has selected its MPRs, it will signal its choice in the subsequent `HELLO` messages. Each MPR registers its choice, adding the selector node to its `MPR Selector Set`, and uses this information when deciding whether to forward a packet or discard it.
+
+## Link quality
+OLSR implements a mechanism to avoid using "bad" links (i.e. links which are usually too weak but may let `HELLO` messages pass from time to time). Since `HELLO` messages are transmitted at a regular interval, each node knows how many of them to expect from each neighbour over a period of time. Comparing this with the number of received messages it computes a measure of the Link Quality (LQ). This metric was originally only used to decide if a link was reliable enough to use. New versions of OLSR have put more importance on link quality.
+
+It is common in WCNs to use the ETX metric to express link quality. ETX stands for Expected Transmission Count and was proposed in @de_couto_high-throughput_2004. It indicates the expected number of transmissions (including retransmissions) required to successfully deliver a packet.
+
+In OLSR, ETX is derived directly from LQ. HELLO messages contain the calculated values, so each node has for every link two measures: its own (LQ) and its neighbour's (NLQ). Since each packet transmission requires an acknowledgement, the estimated probability of success is $\mathrm{LQ} \cdot \mathrm{NLQ}$. ETX is calculated as
+
+\begin{equation}
+\mathrm{ETX} = \frac{1}{\mathrm{LQ} \cdot \mathrm{NLQ}}
+\end{equation}
 
 # Robustness analysis
 The first metric analysed is the robustness of the network. The chosen methodology is a variation of the percolation problem described in Chapter 16 of [@newman_networks:_2010].<!--_-->
