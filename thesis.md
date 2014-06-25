@@ -123,7 +123,7 @@ A method for generating graphs with a power law degree distribution, using a pre
 
 
 # OLSR summary
-Optimized Link State Routing (OLSR) is a link state routing protocol, standardized by the IEEE in RFC 3626^[@jacquet_optimized_2003] and designed to have a better performance on wireless mesh and ad-hoc networks than traditional protocols for wired networks. The most peculiar feature of OLSR is a more efficient flooding technique which allows to propagate topology information using a fraction of the traffic required by simple uncontrolled flooding. Reducing overhead traffic for routing is key in wireless networks where links can become congested easily and even more so in WCNs where the nodes are usually low-power devices.
+Optimized Link State Routing (OLSR) is a link state routing protocol, standardized by the IETF in RFC 3626^[@clausen_optimized_2003] and designed to have a better performance on wireless mesh and ad-hoc networks than traditional protocols for wired networks. The most peculiar feature of OLSR is a more efficient flooding technique which allows to propagate topology information using a fraction of the traffic required by simple uncontrolled flooding. Reducing overhead traffic for routing is key in wireless networks where links can become congested easily and even more so in WCNs where the nodes are usually low-power devices.
 
 The key concept of OLSR is the use of multi-point relays (MPRs) to achieve a more efficient distribution of routing information. After each node selects its own MPRs between its neighbours, the other neighbours will not rebroadcast topology information from it. This means less processing load and less unnecessary traffic for the network. The selection of MPRs works in two steps: neighbourhood discovery and relay selection.
 
@@ -143,10 +143,10 @@ OLSR implements a mechanism to avoid using "bad" links (i.e. links which are usu
 
 It is common in WCNs to use the ETX metric to express link quality. ETX stands for Expected Transmission Count and was proposed in @de_couto_high-throughput_2004. It indicates the expected number of transmissions (including retransmissions) required to successfully deliver a packet.
 
-In OLSR, ETX is derived directly from LQ. HELLO messages contain the calculated values, so each node has for every link two measures: its own (LQ) and its neighbour's (NLQ). Since each packet transmission requires an acknowledgement, the estimated probability of success is $\mathrm{LQ} \cdot \mathrm{NLQ}$. ETX is calculated as
+In OLSR, ETX is derived directly from LQ. `HELLO` messages contain the calculated values, so each node has for every link two measures: its own (LQ) and its neighbour's (NLQ). Since each packet transmission requires an acknowledgement, the estimated probability of success is $\linkq \cdot \nlq$. ETX is calculated as
 
 \begin{equation}
-\mathrm{ETX} = \frac{1}{\mathrm{LQ} \cdot \mathrm{NLQ}}
+\etx = \frac{1}{\linkq \cdot \nlq}
 \end{equation}
 
 # Robustness analysis
@@ -154,11 +154,10 @@ The first metric analysed is the robustness of the network. The chosen methodolo
 
 Defining robustness is not trivial. While it is intuitive that removing nodes or links affects the network ability to successfully transport information, it is not obvious how this ability can be quantified. Moreover, nodes and links in a network are note all equal, neither in the impact of their removal nor in their probability of failure in the real world.
 
-The first concern is traditionally addressed in literature by considering the connected components of the remaining graph. Specifically, the metric is defined as the ratio
+The first concern is traditionally addressed in literature by considering the connected components $C_0, \ldots C_n$ of the remaining graph. Specifically, define $|C_0|$ the order of the largest connected component. The robustness metric is then defined as the ratio
 
 \begin{equation}
-S = \frac{\text{size of the largest connected component}}
-{\text{size of the original graph}}
+S = \frac{|C_0|}{|V|}
 \end{equation}
 
 Then the inequalities of nodes and link must be taken into account. This is a more complicated matter because there is not a single correct solution. The approach largely depends on the real world situation to be analysed. For example, to evaluate the robustness of a network to random equipment failures the nodes can be removed in a random order. On the other hand, to simulate a targeted attack scenario the nodes with highest degree can be removed first, assuming attackers will direct their action to cause the highest possible damage. Other node or link metrics can be used in the same way, to simulate other scenarios.
