@@ -1,5 +1,5 @@
-FFWien graphs: 238 nodes, 437 edges, <k> = 1.83613445378
-pref_att graphs: 500 nodes, 996 edges, <k> = 1.992
-FFGraz graphs: 145 nodes, 208 edges, <k> = 1.43448275862
-ninux graphs: 132 nodes, 154 edges, <k> = 1.16666666667
-e-r graphs: 500 nodes, 874 edges, <k> = 1.748
+FFWien graphs: 238 nodes, 437 edges, <k> = 3.672268908
+pref_att graphs: 500 nodes, 996 edges, <k> = 3.984
+FFGraz graphs: 145 nodes, 208 edges, <k> = 2.868965517
+ninux graphs: 132 nodes, 154 edges, <k> = 2.333
+e-r graphs: 500 nodes, 874 edges, <k> = 3.496
