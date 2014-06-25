@@ -149,6 +149,24 @@ In OLSR, ETX is derived directly from LQ. `HELLO` messages contain the calculate
 \etx = \frac{1}{\linkq \cdot \nlq}
 \end{equation}
 
+# The analysed networks
+
+The three WCNs which are analysed later are Ninux, Funkeuer Wien and Funkfeuer Graz. The study considers 50 snapshots of the networks taken from ... to ... <!--TODO-->.
+
+## Ninux
+Ninux^[http://wiki.ninux.org/] is the largest italian WCN. It was started in 2001 in Rome and now consists of about 250 active nodes, located in different "Ninux islands" all over Italy.
+The analysis considered only the biggest connected island, with 132 nodes and 154 links ($\left< k \right> \simeq 2.333$).
+
+OLSR is used as the routing protocol inside islands, while the islands are connected together using tunnels.
+
+## FFWien
+FunkFeuer^[http://www.funkfeuer.at/] is the collective name of different WCNs in Austria. FunkFeuer Wien^[http://www.funkfeuer.at/Vienna.206.0.html?&L=1] (FFWien) is the biggest, with 237 nodes and 433 links ($\left< k \right> \simeq 3.654$) and it covers, according to the website, 1/3 of Wien (Vienna).
+
+## FFGraz
+FunkFeuer Graz^[http://graz.funkfeuer.at/] (FFGraz) is the "smaller sister" of the FFWien network, situated in the homonymous city. It consists of 144 nodes and 199 edges ($\left< k \right> \simeq 2.764$).
+
+Both FFWien and FFGraz also use OLSR as a routing protocol. It should be noted, however, that the versions of OLSR used in practice in WCNs do not behave exactly as the specification of the protocol mandates. The next section discusses both OLSR and the differences between the standard and the real cases.
+
 # Robustness analysis
 The first metric analysed is the robustness of the network. The chosen methodology is a variation of the percolation problem described in Chapter 16 of [@newman_networks:_2010].<!--_-->
 
