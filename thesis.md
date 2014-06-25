@@ -5,33 +5,43 @@ date: 2014 - VI
 bibliography: thesis.bib
 ...
 
+\newcommand{\st}{\text{ st. }}
+\newcommand{\etx}{\mathrm{ETX}}
+\newcommand{\linkq}{\mathrm{LQ}}
+\newcommand{\nlq}{\mathrm{NLQ}}
 \chapterstyle{section}
 
-# Introduction
+# Introduction {-}
 Wireless Community Networks (WCNs), a particular kind of wireless mesh networks, have become more and more popular in recent years. These networks are different from traditional ones in various aspects, such as the link nature and the arising topologies. For this reason, generic network protocols may not be well suited for WCNs and much research effort is being dedicated to the development of new routing protocols for this networks and for measuring their efficiency.
 
 This works provides an introduction to the topic of Wireless Community Networks and a description of the three networks which are subsequently analysed. Also provided is an introduction to OLSR, the routing protocol which is used in the analysed networks. The biggest part focuses on the analysis of some efficiency metrics for the chosen networks and a comparison with some well known random network models.
 
 # Wireless Community Networks
-Wireless Community Networks have existed since 2000 and have gained popularity with the decrease of the cost for Wi-Fi equipment. The idea behind them is simple but powerful: leveraging Wi-Fi technology to create a network which is owned by citizens instead of corporations. The basic component of a WCN is the node, which usually consists of a router with some wireless interfaces attached. Most nodes have one or more directional interfaces to communicate with other nodes and some also have an omnidirectional interface to serve as an Access Point (AP).
+The phrase "Wireless Community Network" has been used in literature to indicate various kinds of projects. The most common usage refers to wireless mesh networks operated by a community of citizens, as opposed to those controlled by a single entity (corporation or government). Other authors also use the term for the public hotspot networks run by municipalities, or more generally for networks that provide wireless connection to the public. In this document the term is used with the first meaning, only for networks which are run -- not merely accessible -- by the community.
+
+## History
+The appearence of the first Wireless Community Networks can be dated to the late 1990s-early 2000s, when the IEEE 802.11 protocol (WiFi) was first introduced. They started as experiments by radio enthusiasts who wanted to explore the potential of this new technology, pushing it to the limit: WiFi was designed as a protocol for local communication, but it was shown that it can perform well also on long distance links, with the right equipment. The experimentation was made easier by the unlicensed spectrum of frequencies in which WiFi operates.
+
+With WiFi gaining popularity and wireless enabled devices becomnig mainstream, the cost of WiFi equipment decreased and so did the barrier to participate in WCNs. At the same time, wireless protocols evolved and improved -- for example 802.11a worked in the less crowded 5GHz band, allowing more separation between the used frequencies and thus less interference. In addition, a key factor to the diffusion on WCNs was the scarce availability of broadband connections in certain areas. In such cases, networks were not an experiment anymore, but were used to provide services were commercial initiatives were lacking.
+
+Today, the WCN scenario is varied: in some places they are used to mitigate the digital divide, elsewhere they remaind experimental testbeds or are more focused on the social/political aspect of being an autonomous network owned and run by citizens. In the latter, the focus is on the services provided inside the network rather than on Internet access, even if it may be available. Some WCN have grown to the point of having an Autonomous System (AS) number assigned and being able to peer with other networks at Internet eXchange Points (IXPs).
+
+WCNs usually have a cultural background of Open Source enthusiasts and hackers^[as in "curious", not as in "criminal"] in general. Some of them are run by a formal associations, other by informal groups of citizens, but in every case node owners know each other and there is a sense of community. More experienced participants share their technical knowledge (and their time), making it possible for new members to enter the network with minimum effort.
 
 Because of their nature of not asking permissions, it is difficult to determine precisely the number of active WCNs as there is no central registry to look at. However, there is a Wikipedia page^[@_list_2014] which, albeit incomplete, lists 262 WCNs at the time of writing. The dimensions of such networks are varied, from just a handful of nodes to nearly 25,000 as in Guifi^[http://guifi.net], which is probably the world's largest WCN.
 
-The three WCNs which are analysed later are Ninux, Funkeuer Wien and Funkfeuer Graz. The study considers 50 snapshots of the networks taken from ... to ... <!--TODO-->.
+## Technology
+WCNs were born together with the IEEE 802.11 protocol family and continue to use it for various reasons, such as hardware availability and low cost, unlicensed frequency spectrum operation and the constant improvement of subsequent versions. Other solutions for the pyhsical layer are sometimes used -- for example proprietary protocols, maybe operating in licensed frequencies, or even methods not based on radio^[Ronja, http://ronja.twibright.com/] -- but they are an uncommon last resort when WiFi can not work (due to interference or other reasons).
 
-## Ninux
-Ninux^[http://wiki.ninux.org/] is the largest italian WCN. It was started in 2001 in Rome and now consists of about 250 active nodes, located in different "Ninux islands" all over Italy.
-The analysis considered only the biggest connected island, with 132 nodes and 154 links ($\left< k \right> \simeq 2.333$).
+A node of a WCN is a router connected with one or more radio interfaces. There is not a standard for the construction of a node, but every community has in time gathered some best practices and guidelines based on experience and trial-and-error. The equipment used varies from consumer WiFi routers (such as the very popular Linksys WRT54GL) with homemade antennas, to professional and more expensive equipment dedicated to long-range WiFi links. Smaller nodes, especially if they are near enough to other ones, may use a single omnidirectional antenna to connect to different nodes. Usually, however, directional antennas with a limited beam width are used, to reduce interference by using different channels, avoid receiving noise from all directions and achieving an higher gain. Some nodes use both kinds of antennas, directional for backbone links and omnidirectional to provides an hotspot access.
 
-OLSR is used as the routing protocol inside islands, while the islands are connected together using tunnels.
+![The difference between an omnidirectional and multiple monodirectional antennas.](./images/directional-antennas.png)
 
-## FFWien
-FunkFeuer^[http://www.funkfeuer.at/] is the collective name of different WCNs in Austria. FunkFeuer Wien^[http://www.funkfeuer.at/Vienna.206.0.html?&L=1] (FFWien) is the biggest, with 237 nodes and 433 links ($\left< k \right> \simeq 3.654$) and it covers, according to the website, 1/3 of Wien (Vienna).
+Routing is one of the biggest challenges in wireless mesh networks. Due to the very nature of wireless links, traditional routing protocols thought for wired networks perform poorly when applied to them. In recent years, many new routing protocols have been proposed to address this issue and today there is a competition with no clear winner. The two most widely known routing protocols for wireless mesh and ad-hoc networks are OLSR and BATMAN. The former, which is used in the three WCNs analysed in this work, will be the subject of chapter 3. *some words on BATMAN?*
 
 ## FFGraz
 FunkFeuer Graz^[http://graz.funkfeuer.at/] (FFGraz) is the "smaller sister" of the FFWien network, situated in the homonymous city. It consists of 144 nodes and 199 edges ($\left< k \right> \simeq 2.764$).
 
-Both FFWien and FFGraz also use OLSR as a routing protocol. It should be noted, however, that the versions of OLSR used in practice in WCNs do not behave exactly as the specification of the protocol mandates. The next section discusses both OLSR and the differences between the standard and the real cases.
 
 # OLSR summary
 Optimized Link State Routing (OLSR) is a link state routing protocol, standardized by the IEEE in RFC 3626^[@jacquet_optimized_2003] and designed to have a better performance on wireless mesh and ad-hoc networks than traditional protocols for wired networks. The most peculiar feature of OLSR is a more efficient flooding technique which allows to propagate topology information using a fraction of the traffic required by simple uncontrolled flooding. Reducing overhead traffic for routing is key in wireless networks where links can become congested easily and even more so in WCNs where the nodes are usually low-power devices.
