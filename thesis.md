@@ -39,8 +39,87 @@ A node of a WCN is a router connected with one or more radio interfaces. There i
 
 Routing is one of the biggest challenges in wireless mesh networks. Due to the very nature of wireless links, traditional routing protocols thought for wired networks perform poorly when applied to them. In recent years, many new routing protocols have been proposed to address this issue and today there is a competition with no clear winner. The two most widely known routing protocols for wireless mesh and ad-hoc networks are OLSR and BATMAN. The former, which is used in the three WCNs analysed in this work, will be the subject of chapter 3. *some words on BATMAN?*
 
-## FFGraz
-FunkFeuer Graz^[http://graz.funkfeuer.at/] (FFGraz) is the "smaller sister" of the FFWien network, situated in the homonymous city. It consists of 144 nodes and 199 edges ($\left< k \right> \simeq 2.764$).
+# Network topology and graphs
+Some mathematical instruments are required to do any kind of description or analysis of the topology of a network, or to explain the functioning of a routing protocol.
+
+The mathematical structure which is used to describe networks is the graph. A *simple, undirected graph* is an ordered pair $G = (V, E)$, where elements of $V$ are the *nodes* (also called *vertices*) of the graph and are usually denoted with letters $u,v,w,\ldots$, while $E \subseteq \binom{V}{2}$ is the set of the *edges* of the graph. For convenience, $e_{ij} \coloneqq \{v_i, v_j\} \in E$.
+
+An edge $e_{ij}$<!--_--> is said to be *incident* to the vertices $v_i$ and $v_j$; equivalently, $v_i$ and $v_j$ are incident to $e_{ij}$<!--_-->. The two vertices incident to an edge are said *adjacent*.
+
+The graph is said simple since there are no loops (i.e. $\{u,u\} \not\in E$) and each pair of vertices is connected by at most one edge. The above mentioned graph is also said undirected. On the other hand, a *directed graph* is a pair $D = (V, A)$ where $A = \{(u,v) | u,v \in V,\, u \neq v\}$ -- the elements of $A$ are usually called *arcs*.
+
+For the purposes of describing networks, graphs are considered to be *finite*, so $N$ and $E$ are finite sets. Many well known finite graph properties do not hold in the infinite case.
+
+A *weighted graph* is a graph in which every edge has an associated label *weight*, usually a real number. It is useful to define a function $w: E \rightarrow \mathbb{R}$ which associates weights to edges; in the case of unweighted graphs, it can be assumed $w: e \mapsto 1\, \forall e \in E$.
+
+To model networks as graphs, each node of the network is represented by a node in the graph and a link between two nodes is represented by an edge between those nodes. If there are unidirectional link, a directed graph is used. For the purposes of this work, every link is considered bidirectional and symmetric, so from now on "graph" will be use for simple, undirected graphs.
+
+## Terminology
+
+### Order and size
+The *order* of a graph is the number of its nodes, $|V|$.
+The *size* of a graph is the number of its edges, $|E|$.
+
+### Degree
+The *degree* $k_v$ of a vertex $v$ is the number of edges incident to that vertex. A vertex of degree 0 is an *isolated vertex*. A vertex of degree 1 is a *leaf*.
+
+The *total degree* of a graph is $\sum_{v \in V} k_v$.
+
+The *degree sequence* of a graph is the list of degrees in non-increasing order. Not every non-increasing sequence of integers is the degree sequence of some graph.
+
+The *degree distribution* of a graph is a function $p_k: \mathbb{N} \rightarrow [0, 1]$ such that
+
+\begin{equation*}
+p_k(n) = \frac{\left\vert{ \{v \in V \st k_v = n\} }\right\vert}{|V|}
+\end{equation*}
+
+The degree distribution is a discrete probability distribution since $\sum_{k} p_k = 1$.
+
+### Subgraphs
+A *subgraph* $G' = (V', E')$ of $G$ is a graph such that $V' \subseteq V$ and $E' \subseteq E\restriction_{V'}$, where $E\restriction_{V'} = \{\{v_i, v_j\} \in E \st v_i,v_j \in V'\}$.
+
+### Walks, paths
+A *walk* is a sequence of vertices $P = (v_0, v_1, \ldots, v_n) \in V \times V \times \ldots \times V$ such that $e_ij \in E,\, 0 \leq i < n$. A walk is *closed* if $v_0 = v_n$, *open* otherwise. The *length* of the walk is $n$. The *weight* of the walk is $w_P = \sum_0^{n-1} w(e_ij)$. In unweighted graphs, $w_P = N$.
+
+A *path* is a walk with no repeated vertices. A *cycle* is a closed walk with no repeated vertices, except obviously the starting one which is repeated once at the end.
+
+Given a graph with no negative-weight cycles, a *geodesic path*, also called *shortest path*, between $v_0$ and $v_n$ is a walk $P = (v_0, v_1, \ldots, v_n)$ such that $\nexists P' = (u_0, u_1, \ldots, u_m)$ with $u_0 = v_0,\, u_m = v_n \st w_{P'} < w_P$. Note that $P$ is a path: if $\exists v_i, v_j \in P \st v_i = v_j$, then $\exists P' = (v_0, \ldots, v_i, v_{j+1}, \ldots, v_n) \st w_{P'} < w_P \Rightarrow P$ is not the geodesic path.\
+In a graph with negative-weight cycles, the geodesic path is not defined, since it is possible to have walks with $w_P = -\infty$.
+
+### Connectivity
+A graph is called *connected* if, for each pair $\{u,v\}$ of nodes, there is a path between $u$ and $v$.
+
+A *connected component* of $G$ is a maximally connected subgraph of $G$.
+
+### Centrality
+*TODO*
+
+## Random graph models
+A random graph is a graph generated by a random process. The reason for using random graph models in network analysis is that they can produce graphs with known degree distributions, which can be used to prove mathematically or otherwise analyse empirically their structural and dynamical properties.
+
+### Erd\H{o}s-Rényi random graph
+The random graph model originally proposed by Erd\H{o}s and Rényi is also called $G(n,M)$ model, since it consists in the uniform random selection of a graph from the set of all graphs with $n$ nodes and $M$ edges.
+
+The model used here is a variaton first introduced by [@gilbert_random_1959], called the $G(n,p)$ model.
+The algorithm starts form a graph with $n$ nodes and no edges. Then, for each unordered pair of nodes $\{i,j\} . i \neq j$, the edge $ij$ is added with probability $p$.
+
+The $G(n,p)$ models has some interesting properties which are not obvious at a first look. For example, the number of edges is not known as in the $G(n,M)$ models, but the expected number of edges can be determined to be $\binom{n}{2}p$. Another important aspect is connectedness: for 
+$p > \frac{(1+\epsilon) \ln n}{n}$
+the graph will almost surely be connected, while for
+$p < \frac{(1-\epsilon) \ln n}{n}$
+it will almost surely have isolated vertices.
+
+Finally, the degree distribution has the form
+
+\begin{equation*}
+%*
+p_k = \binom{n-1}{k} p^k (1-p)^{n-1-k}
+\end{equation*}<!--*-->
+
+### Barabási-Albert graph
+A scale free network is a network whose degree distribution follows a power law of the form $p_k = Ck^{-\alpha}$.
+
+A method for generating graphs with a power law degree distribution, using a preferential attachment mechanism, was devised by A. L. Barabási and R. Albert in [@barabasi_emergence_1999]. This is the method implemented by NetworkX. Given a target number $n$ of nodes and a parametes $m$ which controls the density of the network, the algorithm starts from a graph with $m$ nodes and no edges. Then other nodes are added and from each new node $m$ edges are created. The new edges are attached preferentially to the nodes with higer degree. This continues until there are $n$ nodes in the graph, meaning the final graph will contain $(n-m) m$ edges.
 
 
 # OLSR summary
@@ -95,35 +174,6 @@ Closeness centrality
 
 ## Analysed networks
 In addition to the three WCNs, some graph have been generated based on known random graph models. The chosen models, explained below, are the Erd\H{o}s-Rényi random model and the Barabási-Albert preferential attachment model. The reason for the choice is that a very different behaviour is expected with respect to the various robustness metrics, as described in [@albert_error_2000]. The goal is to compare the well known behaviour of these topologies to the real ones of the WCNs. The implementation of these models provided by NetworkX has been used.
-
-### Erd\H{o}s-Rényi random graph
-(NetworkX generator: `fast_gnp_random_graph`)
-
-The random graph model originally proposed by Erd\H{o}s and Rényi is also called $G(n,M)$ model, since it consists in the uniform random selection of a graph from the set of all graphs with $n$ nodes and $M$ edges.
-
-The model used here is a variaton first introduced by [@gilbert_random_1959], called the $G(n,p)$ model.
-The algorithm starts form a graph with $n$ nodes and no edges. Then, for each unordered pair of nodes $\{i,j\} . i \neq j$, the edge $ij$ is added with probability $p$.
-
-The $G(n,p)$ models has some interesting properties which are not obvious at a first look. For example, the number of edges is not known as in the $G(n,M)$ models, but the expected number of edges can be determined to be $\binom{n}{2}p$. Another important aspect is connectedness: for 
-$p > \frac{(1+\epsilon) \ln n}{n}$
-the graph will almost surely be connected, while for
-$p < \frac{(1-\epsilon) \ln n}{n}$
-it will almost surely have isolated vertices.
-
-Finally, the degree distribution has the form
-
-\begin{equation*}
-%*
-P(k) = \binom{n-1}{k} p^k (1-p)^{n-1-k}
-\end{equation*}<!--*-->
-
-
-### Barabási-Albert graph
-(NetworkX generator: `barabasi_albert_graph`)
-
-A scale free network is a network whose degree distribution follows a power law of the form $p_k = Ck^{-\alpha}$.
-
-A method for generating graphs with a power law degree distribution, using a preferential attachment mechanism, was devised by A. L. Barabási and R. Albert in [@barabasi_emergence_1999]. This is the method implemented by NetworkX. Given a target number $n$ of nodes and a parametes $m$ which controls the density of the network, the algorithm starts from a graph with $m$ nodes and no edges. Then other nodes are added and from each new node $m$ edges are created. The new edges are attached preferentially to the nodes with higer degree. This continues until there are $n$ nodes in the graph, meaning the final graph will contain $(n-m) m$ edges.
 
 ## Practical considerations
 To obtain meaningful results, the syntetic graphs need to be comparable with the real topologies at least in some aspects, the most obvious being average degree.
