@@ -65,7 +65,7 @@ class dataParser():
             [1, -1],
             args=(x, y)
         )
-        fittedValue = [out[0] * (v ** out[1]) for v in x]
+        #fittedValue = [out[0] * (v ** out[1]) for v in x]
         q.put({"x": x, "y": y})
   
     def getRobustness(self):
