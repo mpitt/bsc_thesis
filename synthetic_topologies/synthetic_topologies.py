@@ -367,7 +367,7 @@ if __name__ == "__main__":
             plot.yAxisLabel = "Frequency"
             plot.legendPosition = "center right"
             plot.outFile = resultDir + "/degree_distribution"
-            plot.plotData(style="o")
+            plot.plotData(style="o--")
         else:
             for mode in graphs:
                 if mode in val:
@@ -377,4 +377,4 @@ if __name__ == "__main__":
             plot.yAxisLabel = "Main cluster size / initial size"
             plot.legendPosition = "lower left"
             plot.outFile = resultDir + "/" + s + "_robustness"
-            plot.plotData(style="o")
+            plot.plotData(style="o--")
