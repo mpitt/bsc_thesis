@@ -220,6 +220,15 @@ In the second case, since $m \in \mathbb{N}$, the value of $\left< k \right>$ ca
 
 As expected, the degree distributions of the three WCNs are quite similar to that of the Barabási-Albert graph, while the Erd\H{o}s-Rényi graph has a binomial distribution.
 
+### Robustness
+
+![Random removal](./synthetic_topologies/results/20140618-1529/nodes_random_robustness.png)
+
+![Removal by degree](./synthetic_topologies/results/20140618-1529/nodes_deg_robustness.png)
+
+![Removal by betweenness centrality](./synthetic_topologies/results/20140618-1529/nodes_bet_robustness.png)
+
+As can be seen in figure 1-3, the networks have a similar behaviour when removing random nodes, but in the "attack" scenarios they exhibit very different properties. Of course, removing the more central nodes makes the networks fail much sooner, but there are marked differences.
 
 # Message propagation analysis
 
