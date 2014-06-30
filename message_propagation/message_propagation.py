@@ -11,8 +11,16 @@ import re
 
 
 class MessagePropagation:
-    def __init__(self, graph, mode, jobs):
+    def __init__(self, graph, mode, jobs, purge=None):
         self.graph = graph
+        if purge is not None:
+            if purge == "weight":
+                e = graph.edges(data=True)
+                e.sort(key=lambda x: x[2]['weight'], reverse=True)
+            if purge == "betweenness":
+                bet = nx.edge_betweenness_centrality(graph)
+                e = sorted(bet, key=bet.get, reverse=True)
+            self.graph.remove_edges_from(e[:10])
         self.jobs = jobs
         self.mode = mode
 
@@ -173,10 +181,17 @@ if __name__ == "__main__":
         choices=["default", "batman", "mpr"],
         help="propagation mode, see description",
         default="default")
+    parser.add_argument(
+        "--purge-links",
+        choices=["none", "weight", "betweenness"],
+        help="purge 10 links based on the value of this option")
     args = parser.parse_args()
 
     G = nx.read_gpickle(args.testcase + "/graph.pickle")
-    mp = MessagePropagation(G, args.mode, args.jobs)
+    if args.purge_links == "none":
+        mp = MessagePropagation(G, args.mode, args.jobs)
+    else:
+        mp = MessagePropagation(G, args.mode, args.jobs, args.purge_links)
     #testname = re.search(r"(?P<file>[^/]*)$", args.testcase).group("name")
     res = mp.run()
     date = time.strftime("%Y%m%d-%H%M")
