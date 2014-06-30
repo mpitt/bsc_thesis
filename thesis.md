@@ -9,6 +9,7 @@ bibliography: thesis.bib
 \newcommand{\etx}{\mathrm{ETX}}
 \newcommand{\linkq}{\mathrm{LQ}}
 \newcommand{\nlq}{\mathrm{NLQ}}
+\newcommand{\mpr}{\mathrm{MPR}}
 \chapterstyle{section}
 
 # Introduction {-}
@@ -44,7 +45,7 @@ Some mathematical instruments are required to do any kind of description or anal
 
 The mathematical structure which is used to describe networks is the graph. A *simple, undirected graph* is an ordered pair $G = (V, E)$, where elements of $V$ are the *nodes* (also called *vertices*) of the graph and are usually denoted with letters $u,v,w,\ldots$, while $E \subseteq \binom{V}{2}$ is the set of the *edges* of the graph. For convenience, $e_{ij} \coloneqq \{v_i, v_j\} \in E$.
 
-An edge $e_{ij}$<!--_--> is said to be *incident* to the vertices $v_i$ and $v_j$; equivalently, $v_i$ and $v_j$ are incident to $e_{ij}$<!--_-->. The two vertices incident to an edge are said *adjacent*.
+An edge $e_{ij}$<!--_--> is said to be *incident* to the vertices $v_i$ and $v_j$; equivalently, $v_i$ and $v_j$ are incident to $e_{ij}$<!--_-->. Two vertices incident to the same edge are said *adjacent*.
 
 The graph is said simple since there are no loops (i.e. $\{u,u\} \not\in E$) and each pair of vertices is connected by at most one edge. The above mentioned graph is also said undirected. On the other hand, a *directed graph* is a pair $D = (V, A)$ where $A = \{(u,v) | u,v \in V,\, u \neq v\}$ -- the elements of $A$ are usually called *arcs*.
 
@@ -86,6 +87,11 @@ A *path* is a walk with no repeated vertices. A *cycle* is a closed walk with no
 Given a graph with no negative-weight cycles, a *geodesic path*, also called *shortest path*, between $v_0$ and $v_n$ is a walk $P = (v_0, v_1, \ldots, v_n)$ such that $\nexists P' = (u_0, u_1, \ldots, u_m)$ with $u_0 = v_0,\, u_m = v_n \st w_{P'} < w_P$. Note that $P$ is a path: if $\exists v_i, v_j \in P \st v_i = v_j$, then $\exists P' = (v_0, \ldots, v_i, v_{j+1}, \ldots, v_n) \st w_{P'} < w_P \Rightarrow P$ is not the geodesic path.\
 In a graph with negative-weight cycles, the geodesic path is not defined, since it is possible to have walks with $w_P = -\infty$.\
 The length of a geodesic path (which is the length of all of them) from $u$ to $v$ is called *geodesic distance* of $u$ and $v$, indicated with $d_{uv}$<!--_-->
+
+### Neighbours
+Each vertex adjacent to $v$ is also called a *neighbour* of $v$. The set of the neighbours of $v$ is called *neighbourhood* of $v$.
+
+The concept of neighbourhood may be extended to vertices at any distance. For example, the *2-hop neighbourhood* of $v$ is the set of vertices $u$ such that there is a walk from $v$ to $u$ whit lenght 2. Similarly, the *strict 2-hop neighbourhood* of $v$ is the set of vertices which are in the 2-hop neighbourhood, excluding $v$ itself and its direct neighbours.
 
 ### Connectivity
 A graph is called *connected* if, for each pair $\{u,v\}$ of nodes, there is a path between $u$ and $v$.
@@ -147,32 +153,87 @@ it will almost surely have isolated vertices.
 
 Finally, the degree distribution has the form
 
-\begin{equation*}
-%*
+\begin{equation}
 p_k = \binom{n-1}{k} p^k (1-p)^{n-1-k}
-\end{equation*}<!--*-->
+\end{equation}
 
 ### Barabási-Albert graph
-A scale free network is a network whose degree distribution follows a power law of the form $p_k = Ck^{-\alpha}$.
+A scale free network is a network whose degree distribution follows a power law of the form
+
+\begin{equation}
+p_k = Ck^{-\alpha}
+\end{equation}
 
 A method for generating graphs with a power law degree distribution, using a preferential attachment mechanism, was devised by A. L. Barabási and R. Albert in [@barabasi_emergence_1999]. This is the method implemented by NetworkX. Given a target number $n$ of nodes and a parameter $m$ which controls the density of the network, the algorithm starts from a graph with $m$ nodes and no edges. Then other nodes are added and from each new node $m$ edges are created. The new edges are attached preferentially to the nodes with higer degree. This continues until there are $n$ nodes in the graph, meaning the final graph will contain $(n-m) m$ edges.
 
 
 # OLSR summary
-Optimized Link State Routing (OLSR) is a link state routing protocol, standardized by the IETF in RFC 3626^[@clausen_optimized_2003] and designed to have a better performance on wireless mesh and ad-hoc networks than traditional protocols for wired networks. The most peculiar feature of OLSR is a more efficient flooding technique which allows to propagate topology information using a fraction of the traffic required by simple uncontrolled flooding. Reducing overhead traffic for routing is key in wireless networks where links can become congested easily and even more so in WCNs where the nodes are usually low-power devices.
+Optimized Link State Routing (OLSR) is a proactive routing protocol standardized by the IETF in RFC 3626^[@clausen_optimized_2003] and designed to have a better performance on wireless mesh and ad-hoc networks than traditional protocols for wired networks.
 
-The key concept of OLSR is the use of multi-point relays (MPRs) to achieve a more efficient distribution of routing information. After each node selects its own MPRs between its neighbours, the other neighbours will not rebroadcast topology information from it. This means less processing load and less unnecessary traffic for the network. The selection of MPRs works in two steps: neighbourhood discovery and relay selection.
+In link state routing protocols, each node is supposed to know the entire topology of the network in order to calculate the routes. This means that each time the topology changes, the new information must be propagated to every node. This is traditionally done by flooding link-state advertisement packet through the network. 
 
-In order to select its MPRs, a node must first know its 2-neighbourhood. This is achieved by receiving `HELLO` messages from the first neighbours, which communicate their respective neighbourhood. After receiving the `HELLO` messages of all its neighbours, a node knows its 1-neighbours, 2-neighbours and to which 2-neighbours every 1-neighbour is connected.
+In the case of traditional networks with wired links, this method is acceptable since the topology seldom changes. In WCN (and wireless networks in general), however, links change their cost quite often and may also disappear temporarily. Flooding in this situation imposes a great effort on the network and may degrade the performance consistently.
 
-Using this information, the node can select a set of its 1-neighbours such that every node in the 2-neighbourhood is at 1 hop from the set. Formally, call $N_1(u)$ the set of 1-neighbours, $N_2(u)$ the set of 2-neighbours, select $S(u) \subseteq N_1(u)$ such that
+OLSR addresses this concern with an optimized flooding mechanism which significantly reduces the overhead by using only selected nodes, called multipoint relays (MPRs), to broadcast link-state advertisements. The next sections outline the details of this mechanism and of OLSR in general.
+
+![Flooding vs. MPR forwarding](images/mpr.png)
+
+## Generic packet format
+OLSR uses different types of messages in its specification. In order to take advantage of the maximal frame size provided by the network, one or more messages are encapsulated in a packet which has the same format for all types of messages. This facilitates the extensibility of the protocol and allows the transmission of different kinds of information in a single packet.
+
+Each message is flooded through the network with a TTL. The transmission to neighbours is just a special case of flooding. Duplication is eliminated locally, since each node maintains a set of messaged it has already processed, and minimized globally by the MPR mechanism.
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|        Packet Length          |    Packet Sequence Number     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Message Type |     Vtime     |         Message Size          | 
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      Originator Address                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time To Live |   Hop Count   |    Message Sequence Number    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+:                            MESSAGE                            :
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Message Type |     Vtime     |         Message Size          | 
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      Originator Address                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time To Live |   Hop Count   |    Message Sequence Number    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+:                            MESSAGE                            :
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+:                                                               :
+               (etc.)
+```
+
+## Link sensing and neighbour discovery
+MPRs are selected locally by each node between its neighbours. The requirement is that the MPRs of a node $v$ must cover, with the union of their neighbourhoods, the 2-hop neighbourhood of $v$. Thus, in order to select its MPRs, a node must know its 2-hop neighbours and how to reach them.
+
+The message type used in OLSR for this purpose is the `HELLO` message, which is transmitted by each node to its neighbours and contains the addresses of the neighbour it knows. Of course, the first `HELLO` messages are empty and only serve the purpose of link sensing.
+After each node populates its neighbour set, it includes this information in its `HELLO` messages, along with some information on the links and the neighbours (e.g. if the links are verified to be symmetric). This allows all nodes to gather the necessary knowledge of their 2-hop neighbourhood.
+
+`HELLO` messages are generated and transmitted at a regular interval (`HELLO_INTERVAL`). Lost links are also advertised for some time (with a link type of `LOST_LINK`).
+
+## MPR selection and signalling
+
+Using the information from the `HELLO` messages, each node can select a set of its neighbours such that every node in its 2-hop neighbourhood is at 1 hop from the set. Formally, call $N_1(u)$ the neighbourhood, $N_2(u)$ the strict 2-hop neighbourhood, select $\mpr(u) \subseteq N_1(u)$ such that
 
 \begin{equation*}
 %*
-\forall v \in N_2(u) \. \exists s \in S(u) \text{ st. } v \in N_1(s)
+\forall v \in N_2(u) \. \exists s \in \mpr(u) \text{ st. } v \in N_1(s)
 \end{equation*}<!--*-->
 
-This requirement essentially means that each node in the strict 2-hop neighbourhood can be reached through a MPR. The protocol specification suggests that the MPR set of each node should be as small as possible, but does not require it. Once a node has selected its MPRs, it will signal its choice in the subsequent `HELLO` messages. Each MPR registers its choice, adding the selector node to its `MPR Selector Set`, and uses this information when deciding whether to forward a packet or discard it.
+This requirement essentially means that each node in the strict 2-hop neighbourhood can be reached through a MPR. The protocol specification suggests that the MPR set of each node should be as small as possible, but does not require it. Once a node has selected its MPRs, it needs to signal its choice to the neighbours, so that the selected nodes know that they must retransmit its broadcasts (and the other nodes know not to do that). `HELLO` messages are used also for this purpose: the selected MPRs are advertised with a neighbour type of `MPR_NEIGH`.
+
+## Message forwarding
+Observing the `HELLO` messages it receives, each node populates and maintains an `MPR Selector Set`, which is the set of nodes that selected it as an MPR. In other words, it is the set of nodes whose transmissions are to be forwarded by the node in question. [*CONT...*]
 
 ## Link quality
 OLSR implements a mechanism to avoid using "bad" links (i.e. links which are usually too weak but may let `HELLO` messages pass from time to time). Since `HELLO` messages are transmitted at a regular interval, each node knows how many of them to expect from each neighbour over a period of time. Comparing this with the number of received messages it computes a measure of the Link Quality (LQ). This metric was originally only used to decide if a link was reliable enough to use. New versions of OLSR have put more importance on link quality.
@@ -229,6 +290,8 @@ Both FFWien and FFGraz also use OLSR as a routing protocol. It should be noted, 
 
 Table: Average degree frequencies in the three WCNs, over 50 samples
 
+![Degree distributions of the three WCNs, compared with the Erd\H{o}s-Rényi and Barabási-Albert models](synthetic_topologies/results/20140626-1629/degree_distribution.png)
+
 # Robustness analysis
 The first metric analysed is the robustness of the network. The chosen methodology is a variation of the percolation problem described in Chapter 16 of [@newman_networks:_2010].<!--_-->
 
@@ -242,20 +305,10 @@ S = \frac{|C_0|}{|V|}
 
 Then the inequalities of nodes and link must be taken into account. This is a more complicated matter because there is not a single correct solution. The approach largely depends on the real world situation to be analysed. For example, to evaluate the robustness of a network to random equipment failures the nodes can be removed in a random order. On the other hand, to simulate a targeted attack scenario the nodes with highest degree can be removed first, assuming attackers will direct their action to cause the highest possible damage. Other node or link metrics can be used in the same way, to simulate other scenarios.
 
-Here different criteria have been used to gather a broad set of data. Specifically, nodes were first removed randomly with uniform probability, as in the classic percolation problem. Then they were removed following the order based on the following criterias.
-
-Degree
-  : The degree of a node is the number of edges connected to that node
-Betweenness centrality
-  : The beetweennes centrality of a node is the fraction of the shortest paths between any two other nodes that pass through that node
-Closeness centrality
-  : The closeness centrality of a node is the mean lenght of the shortest paths from that node to every other node
-
-## Analysed networks
-In addition to the three WCNs, some graph have been generated based on known random graph models. The chosen models, explained below, are the Erd\H{o}s-Rényi random model and the Barabási-Albert preferential attachment model. The reason for the choice is that a very different behaviour is expected with respect to the various robustness metrics, as described in [@albert_error_2000]. The goal is to compare the well known behaviour of these topologies to the real ones of the WCNs. The implementation of these models provided by NetworkX has been used.
+Here different criteria have been used to gather a broad set of data. Specifically, nodes were first removed randomly with uniform probability, as in the classic percolation problem. Then they were removed following the order based on different centrality metrics (see [chapter 3](#network_topology_and_graphs)).
 
 ## Practical considerations
-To obtain meaningful results, the syntetic graphs need to be comparable with the real topologies at least in some aspects, the most obvious being average degree.
+To obtain meaningful results, the synthetic graphs generated with th random models need to be comparable with the real topologies at least in some aspects, the most obvious being average degree.
 In order to achive this, the parameters of the generators must be adjusted remembering that:
 
 * for the Erd\H{o}s-Rényi model, the expected average degree is 
@@ -276,14 +329,6 @@ In the second case, since $m \in \mathbb{N}$, the value of $\left< k \right>$ ca
 
 ## Results
 
-### Degree distributions
-
-![Degree distributions of the graphs](./synthetic_topologies/results/20140618-1529/degree_distribution.png)\ 
-
-As expected, the degree distributions of the three WCNs are quite similar to that of the Barabási-Albert graph, while the Erd\H{o}s-Rényi graph has a binomial distribution.
-
-### Robustness
-
 ![Random removal](./synthetic_topologies/results/20140618-1529/nodes_random_robustness.png)
 
 ![Removal by degree](./synthetic_topologies/results/20140618-1529/nodes_deg_robustness.png)
@@ -299,14 +344,14 @@ The robustness of a network is based on a static analysis of the connectivity of
 
 Given this, in order to understand the behaviour of a communication network we need to study the behaviour of its routing protocol with different underlying topologies. We are interested in the phase of topology discovery, where each node receives information on the existence of the other nodes in the network and (part of) the route to reach them.
 
-Topology discovery in link state routing protocols is usually performed with each node flooding the network with some kind of `hello` message. The possible variations are the flooding policy and the contents of the message. The most popular routing protocols used in mesh networks behave as follows:
+Topology discovery in link state routing protocols is usually performed with each node flooding the network with some kind of link-state advertisement message. The possible variations are the flooding policy and the contents of the message. The most popular routing protocols used in mesh networks behave as follows:
 
-* B.A.T.M.A.N. uses the simplest possible flooding (each node just performs a duplicate detection to avoid loops) and the `hello` message contains the sender address and a sequence number (for the duplicate detection)
-* OLSR employs a more sophisticated flooding mechanism based on MPRs and the `hello` message contains the whole neighbourhood of the sender
+* B.A.T.M.A.N. uses the simplest possible flooding (each node just performs a duplicate detection to avoid loops) and the advertisement message contains the sender address and a sequence number (for the duplicate detection)
+* OLSR employs a more sophisticated flooding mechanism based on MPRs and the advertisement message contains the whole neighbourhood of the sender
 * versions of OLSR used in practice usually force each node to be an MPR ^[@maccari_analysis_2013], thus having an hybrid behaviour with flooding as in B.A.T.M.A.N.
 
 ### Problem definition
-The network is represented by a weighted graph $G=(N,E)$, where weights represent the probability of losing a packet on each link (we use the ETX metric of OLSR for this purpose).
+The network is represented by a weighted graph $G=(V,E)$, where weights represent the probability of losing a packet on each link (we use the ETX metric of OLSR for this purpose).
 
 Each node creates a message with information on its neighbourhood and propagates it to each neighbour. Each node also propagates the message it receives, with a simple duplicate detection based on the sender to avoid loops.
 
@@ -395,12 +440,6 @@ The value of $P(v|w)$ and $P(v|\lnot w)$ is not so obvious:
 * $P(v|\lnot w)$ is the sum of the probabilities of success for simple paths from $u$ to $v$ excluding the paths that contain $w$
 
 This must be computed for every $w$ that appears in at least one simple path $u \rightarrow v$. Again, this computation must be repeated for every possible source-destination pair $u,v$.
-
-### Developments
-Save the paths in order to figure out which one is the best (between the ones that succeeded in the simulation)
-
-* No neighbours (B.A.T.M.A.N.)
-* MPR (see ninux-topology-analyzer for MPR solver)
 
 # Conclusions
 
