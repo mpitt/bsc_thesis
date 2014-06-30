@@ -24,16 +24,16 @@ The appearence of the first Wireless Community Networks can be dated to the late
 
 With WiFi gaining popularity and wireless enabled devices becomnig mainstream, the cost of WiFi equipment decreased and so did the barrier to participate in WCNs. At the same time, wireless protocols evolved and improved -- for example 802.11a worked in the less crowded 5GHz band, allowing more separation between the used frequencies and thus less interference. In addition, a key factor to the diffusion on WCNs was the scarce availability of broadband connections in certain areas. In such cases, networks were not an experiment anymore, but were used to provide services were commercial initiatives were lacking.
 
-Today, the WCN scenario is varied: in some places they are used to mitigate the digital divide, elsewhere they remaind experimental testbeds or are more focused on the social/political aspect of being an autonomous network owned and run by citizens. In the latter, the focus is on the services provided inside the network rather than on Internet access, even if it may be available. Some WCN have grown to the point of having an Autonomous System (AS) number assigned and being able to peer with other networks at Internet eXchange Points (IXPs).
+Today, the WCN scenario is varied: in some places they are used to mitigate the digital divide, elsewhere they remaind experimental testbeds or are more focused on the social/political aspect of being an autonomous network owned and run by citizens. In the latter, the focus is on the services provided inside the network rather than on Internet access, even if it may be available. Some WCNs have grown to the point of having an Autonomous System (AS) number assigned and being able to peer with other networks at Internet eXchange Points (IXPs).
 
 WCNs usually have a cultural background of Open Source enthusiasts and hackers^[as in "curious", not as in "criminal"] in general. Some of them are run by a formal associations, other by informal groups of citizens, but in every case node owners know each other and there is a sense of community. More experienced participants share their technical knowledge (and their time), making it possible for new members to enter the network with minimum effort.
 
-Because of their nature of not asking permissions, it is difficult to determine precisely the number of active WCNs as there is no central registry to look at. However, there is a Wikipedia page^[@_list_2014] which, albeit incomplete, lists 262 WCNs at the time of writing. The dimensions of such networks are varied, from just a handful of nodes to nearly 25,000 as in Guifi^[http://guifi.net], which is probably the world's largest WCN.
+Because of their nature of not asking permissions, it is difficult to determine precisely the number of active WCNs as there is no central registry to look at. However, there is a Wikipedia page^[@_list_2014] which, albeit incomplete, lists 262 WCNs at the time of writing. The dimensions of such networks are varied, from just a handful of nodes to nearly 25,000 as in Guifi^[http://guifi.net], which is widely regarded as the world's largest WCN.
 
 ## Technology
 WCNs were born together with the IEEE 802.11 protocol family and continue to use it for various reasons, such as hardware availability and low cost, unlicensed frequency spectrum operation and the constant improvement of subsequent versions. Other solutions for the pyhsical layer are sometimes used -- for example proprietary protocols, maybe operating in licensed frequencies, or even methods not based on radio^[Ronja, http://ronja.twibright.com/] -- but they are an uncommon last resort when WiFi can not work (due to interference or other reasons).
 
-A node of a WCN is a router connected with one or more radio interfaces. There is not a standard for the construction of a node, but every community has in time gathered some best practices and guidelines based on experience and trial-and-error. The equipment used varies from consumer WiFi routers (such as the very popular Linksys WRT54GL) with homemade antennas, to professional and more expensive equipment dedicated to long-range WiFi links. Smaller nodes, especially if they are near enough to other ones, may use a single omnidirectional antenna to connect to different nodes. Usually, however, directional antennas with a limited beam width are used, to reduce interference by using different channels, avoid receiving noise from all directions and achieving an higher gain. Some nodes use both kinds of antennas, directional for backbone links and omnidirectional to provides an hotspot access.
+A node of a WCN is a router connected with one or more radio interfaces. There is not a standard for the construction of a node, but over time every community has gathered some best practices and guidelines based on experience and trial-and-error. The equipment used varies from consumer WiFi routers (such as the very popular Linksys WRT54GL) with homemade antennas, to professional and more expensive equipment dedicated to long-range WiFi links. Smaller nodes, especially if they are near enough to other ones, may use a single omnidirectional antenna to connect to different nodes. Usually, however, directional antennas with a limited beam width are used, to reduce interference leveraging different channels, avoid receiving noise from all directions and achieve an higher gain. Some nodes use both kinds of antennas, directional for backbone links and omnidirectional to provides an hotspot access.
 
 ![The difference between an omnidirectional and multiple monodirectional antennas.](./images/directional-antennas.png)
 
@@ -84,7 +84,8 @@ A *walk* is a sequence of vertices $P = (v_0, v_1, \ldots, v_n) \in V \times V \
 A *path* is a walk with no repeated vertices. A *cycle* is a closed walk with no repeated vertices, except obviously the starting one which is repeated once at the end.
 
 Given a graph with no negative-weight cycles, a *geodesic path*, also called *shortest path*, between $v_0$ and $v_n$ is a walk $P = (v_0, v_1, \ldots, v_n)$ such that $\nexists P' = (u_0, u_1, \ldots, u_m)$ with $u_0 = v_0,\, u_m = v_n \st w_{P'} < w_P$. Note that $P$ is a path: if $\exists v_i, v_j \in P \st v_i = v_j$, then $\exists P' = (v_0, \ldots, v_i, v_{j+1}, \ldots, v_n) \st w_{P'} < w_P \Rightarrow P$ is not the geodesic path.\
-In a graph with negative-weight cycles, the geodesic path is not defined, since it is possible to have walks with $w_P = -\infty$.
+In a graph with negative-weight cycles, the geodesic path is not defined, since it is possible to have walks with $w_P = -\infty$.\
+The length of a geodesic path (which is the length of all of them) from $u$ to $v$ is called *geodesic distance* of $u$ and $v$, indicated with $d_{uv}$<!--_-->
 
 ### Connectivity
 A graph is called *connected* if, for each pair $\{u,v\}$ of nodes, there is a path between $u$ and $v$.
@@ -92,7 +93,42 @@ A graph is called *connected* if, for each pair $\{u,v\}$ of nodes, there is a p
 A *connected component* of $G$ is a maximally connected subgraph of $G$.
 
 ### Centrality
-*TODO*
+In network science there is substantial interest in the concept of the centrality of a vertex (or an edge) in a graph. The idea behind this metric is to determine the most "important" components of a network. The meaning of "important" varies depending on the context: in social networks importance is usually defined by the influence of a node, measured by the size of it neighbourhood. In communication networks, the most important nodes are those who participates most communications, either by forming circuits or by relaying packets. These are just two examples of different notions of importance that require different ways to be measures. In the following paragraphs, the centrality metrics relevant to this work are presented.
+
+#### Degree centrality
+The degree of a vertex is the simplest possible measure of centrality and it is the only one that is only based on local properties. This is an advantage from the computational point of view, but it also implies that degree centrality is the least significant centrality metric. Nonetheless, depending on the graph, it can approximate quite well the behaviour of other metrics.
+
+\begin{equation}
+C_D(v) = k_v
+\end{equation}
+
+#### Betweenness centrality
+Betweenness centrality of vertex $v$ is defined as the fraction of shortest paths between any two vertices that pass through $v$. Formally, define $\sigma(s,t)$ the number of shortest paths from $s$ to $t$ and $\sigma(s,t|v)$ the number of those paths that pass through $v$. If $s = t,\, \sigma(s,t) = 1$. There is not a consensus in literature if a path "passes through" its endpoint; in this case, it is assumed not: $\sigma(s,t|s) = \sigma(s,t|t) = 0$. The betweennes centrality is
+
+\begin{equation}
+C_B(v) = \sum_{s,t \in V} \frac{\sigma(s,t|v)}{\sigma(s,t)} %_
+\end{equation}
+
+Betweennes centrality is especially useful in the study of communication networks because information usually travels through the shortest path, so $C_B$ helps estimating how much traffic a node will see, in a way other centrality measures do not consider. For example, in the classic Barbell graph -- two complete graphs connected by a path -- vertices on the path have a very small degree but since every path between the two complete graphs passes through them they have high betweenness. This reflects the great control they have over the communications between other nodes.
+
+#### Closeness centrality
+Closeness centrality is also based on shortest paths, but has a different approach and a different meaning. It is based on the mean distance between $v$ and the other vertices. If $d_{vu}$<!--_--> is the geodesic distance between $v$ and $u$, the *mean geodesic distance* from $v$ to $u$, averaged over all vertices $u$ is
+
+\begin{equation}
+\mathcal{L}_v = \frac{1}{n} \sum_u d_{vu}  %_
+\end{equation}
+
+Since usually centrality measures have high values for more central nodes, closeness centrality is usually defined as the inverse of the mean distance $\mathcal{L}_v$.
+
+\begin{equation}
+C_C(v) = \frac{1}{\mathcal{L}_v} = \frac{n}{\sum_u d_{vu}}  %_
+\end{equation}
+
+Closeness centrality, despite being often used in network studies, has come shortcomings. For example, the above definition is only valid if the graph is connected, since $d_{vu}$ is defined to be infinite if there is no path from $v$ to $u$. In graphs with more than one connected components, $C_C$ would then be zero for every vertex. The usual solution is to compute the closeness centrality for each connected component separately: this works, but since distances are usually smaller in small components, vertices in those components tend to have higher closeness centrality, which may be undesirable.
+
+Another issue with closeness centrality is that its values are often cramped in a small range from lowest to highest. In most networks distances tend to be small, typically increasing with the logarithm of the size $n$ of the graph. So, the lower and upper bound for $\mathcal{L}_v$<!--_--> are, respectively, $1$ and $\log n$. Similarly, the range for $C_C$ is limited.
+
+<!--### Clustering-->
 
 ## Random graph models
 A random graph is a graph generated by a random process. The reason for using random graph models in network analysis is that they can produce graphs with known degree distributions, which can be used to prove mathematically or otherwise analyse empirically their structural and dynamical properties.
@@ -119,7 +155,7 @@ p_k = \binom{n-1}{k} p^k (1-p)^{n-1-k}
 ### Barabási-Albert graph
 A scale free network is a network whose degree distribution follows a power law of the form $p_k = Ck^{-\alpha}$.
 
-A method for generating graphs with a power law degree distribution, using a preferential attachment mechanism, was devised by A. L. Barabási and R. Albert in [@barabasi_emergence_1999]. This is the method implemented by NetworkX. Given a target number $n$ of nodes and a parametes $m$ which controls the density of the network, the algorithm starts from a graph with $m$ nodes and no edges. Then other nodes are added and from each new node $m$ edges are created. The new edges are attached preferentially to the nodes with higer degree. This continues until there are $n$ nodes in the graph, meaning the final graph will contain $(n-m) m$ edges.
+A method for generating graphs with a power law degree distribution, using a preferential attachment mechanism, was devised by A. L. Barabási and R. Albert in [@barabasi_emergence_1999]. This is the method implemented by NetworkX. Given a target number $n$ of nodes and a parameter $m$ which controls the density of the network, the algorithm starts from a graph with $m$ nodes and no edges. Then other nodes are added and from each new node $m$ edges are created. The new edges are attached preferentially to the nodes with higer degree. This continues until there are $n$ nodes in the graph, meaning the final graph will contain $(n-m) m$ edges.
 
 
 # OLSR summary
@@ -166,6 +202,32 @@ FunkFeuer^[http://www.funkfeuer.at/] is the collective name of different WCNs in
 FunkFeuer Graz^[http://graz.funkfeuer.at/] (FFGraz) is the "smaller sister" of the FFWien network, situated in the homonymous city. It consists of 144 nodes and 199 edges ($\left< k \right> \simeq 2.764$).
 
 Both FFWien and FFGraz also use OLSR as a routing protocol. It should be noted, however, that the versions of OLSR used in practice in WCNs do not behave exactly as the specification of the protocol mandates. The next section discusses both OLSR and the differences between the standard and the real cases.
+
+ Degree     Ninux   FFWien   FFGraz
+-------- -------- -------- --------
+       1    69.02    77.96    64.72
+       2    22.64    27.46    27.28
+       3    16.34    36.38    18.80
+       4     9.66    36.24    11.72
+       5     4.36    18.34     2.04
+       6     1.98    11.40     7.32
+       7     1.00     8.50     2.80
+       8     4.00     3.62     2.24
+       9     2.00     4.62     1.84
+      10     1.00     4.44     2.04
+      11     0.00     1.98     1.24
+      12     0.00     2.94     1.40
+      13     0.00     0.46     0.28
+      14     0.00     0.48     0.08
+      15     0.00     1.18     0.28
+      16     0.00     0.32     1.60
+      17     0.00     0.50     0.00
+      18     0.00     0.02     0.00
+      19     0.00     1.30     0.00
+      20     0.00     0.62     0.00
+      21     0.00     0.06     0.00
+
+Table: Average degree frequencies in the three WCNs, over 50 samples
 
 # Robustness analysis
 The first metric analysed is the robustness of the network. The chosen methodology is a variation of the percolation problem described in Chapter 16 of [@newman_networks:_2010].<!--_-->
