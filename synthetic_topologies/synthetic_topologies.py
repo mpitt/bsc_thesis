@@ -17,14 +17,12 @@ from string import split
 
 resultDir = "results/" + time.strftime("%Y%m%d-%H%M")  # 20141225-1453
 numtests = 30
-nodes = 500
-gnp_random_p = 0.02
+nodes = 150
+gnp_random_p = 0.03
 barabasi_m = 2
 
 verbose = 2  # [3:debug|2:info|1:warning|0:error]
-graphModes = "all"  # [all|e-r|pref_att|known]
-nodeStrategy = "all"  # [all|random|deg|bet|close|cluster|none]
-linkStrategy = "all"  # [all|random|bet|none]
+graphModes = "all"  # [all|e-r|b-a|known]
 
 
 class dataParser():
@@ -52,6 +50,7 @@ class dataParser():
             for node in G:
                 degreeDistribution[G.degree(node)] += 1
                 samples += 1
+        ycount = [d / len(self.data) for d in degreeDistribution.values()]
         for d in degreeDistribution:
             degreeDistribution[d] /= samples
         x = degreeDistribution.keys()
@@ -66,7 +65,7 @@ class dataParser():
             args=(x, y)
         )
         #fittedValue = [out[0] * (v ** out[1]) for v in x]
-        q.put({"x": x, "y": y})
+        q.put({"x": x, "y": y, "ycount": ycount})
   
     def getRobustness(self):
         avgRobustness = defaultdict(list)
@@ -143,7 +142,7 @@ class dataParser():
         nlen = float(len(graph.nodes()))
         mainCSize = defaultdict(list)
         mainNonCSize = defaultdict(list)
-        fractionToRemove = 0.2
+        fractionToRemove = 0.4
         for i in range(tests):
             if order == "random":
                 random.shuffle(items)
@@ -188,7 +187,7 @@ class dataPlot:
         self.key = []
         self.legendPosition = "center right"
         if C is None:
-            self.fileType = ".png"
+            self.fileType = ".svg"
         else:
             self.fileType = "." + C.imageExtension
 
@@ -267,10 +266,10 @@ if __name__ == "__main__":
         for test in range(numtests):
             graphs["e-r"].append(
                 nx.fast_gnp_random_graph(nodes, p=gnp_random_p))
-    if graphModes == "all" or graphModes == "pref_att":
-        graphs["pref_att"] = []
+    if graphModes == "all" or graphModes == "b-a":
+        graphs["b-a"] = []
         for test in range(numtests):
-            graphs["pref_att"].append(
+            graphs["b-a"].append(
                 nx.barabasi_albert_graph(nodes, m=barabasi_m))
     if graphModes == "wcn" or graphModes == "all":
         try:
@@ -293,18 +292,19 @@ if __name__ == "__main__":
     for mode, cases in graphs.items():
         statfile.write(mode + " graphs: ")
         nodes, edges = getGraphModeStats(cases)
-        avgDeg = float(edges) / float(nodes)
+        avgDeg = 2.0 * float(edges) / float(nodes)
         statfile.write(str(nodes) + " nodes, ")
         statfile.write(str(edges) + " edges, ")
         statfile.write("<k> = " + str(avgDeg))
         statfile.write("\n")
     
     strategies = [
-        'degdist',
-        'nodes_random',
-        'nodes_deg',
-        'nodes_bet',
-        'nodes_close']
+        'degdist'  #,
+        # 'nodes_random',
+        # 'nodes_deg',
+        # 'nodes_bet',
+        # 'nodes_close'
+    ]
 #    if nodeStrategy == "all":
 #        for s in ["random", "deg", "bet", "close", "cluster"]:
 #            strategies.append("nodes_"+s)
@@ -326,7 +326,7 @@ if __name__ == "__main__":
         print "e-r graphs (nodes, links): "
         print [(len(G.nodes()), len(G.edges())) for G in graphs["e-r"]]
         print "Preferential attachment graphs (nodes, links): "
-        print [(len(G.nodes()), len(G.edges())) for G in graphs["pref_att"]]
+        print [(len(G.nodes()), len(G.edges())) for G in graphs["b-a"]]
   
     parsers = []
     for s in strategies:
@@ -362,12 +362,11 @@ if __name__ == "__main__":
                 plot.y.append(val[mode]["y"])
         if s == "degdist":
             plot.title = "Degree distribution"
-            plot.xright = 30
             plot.xAxisLabel = "Degree"
             plot.yAxisLabel = "Frequency"
             plot.legendPosition = "center right"
             plot.outFile = resultDir + "/degree_distribution"
-            plot.plotData(style="o--")
+            plot.plotData(style="o:")
         else:
             for mode in graphs:
                 if mode in val:
@@ -377,4 +376,29 @@ if __name__ == "__main__":
             plot.yAxisLabel = "Main cluster size / initial size"
             plot.legendPosition = "lower left"
             plot.outFile = resultDir + "/" + s + "_robustness"
-            plot.plotData(style="o--")
+            plot.plotData(style="o:")
+
+    for s, val in retValues.items():
+        with open("{}/{}".format(resultDir, s), "w+") as f:
+            if s == "degdist":
+                title = " Degree "
+                ls = {}
+                ls["x"] = len(title)
+                sep = "{0:-<{l}}".format("-", l=ls["x"])
+                for mode in val:
+                    ls[mode] = max([8, len(mode)])
+                    title += " {:>{l}}".format(mode, l=ls[mode])
+                    sep += " {0:-<{l}}".format("-", l=ls[mode])
+                f.write("{}\n{}\n".format(title, sep))
+                points = max([len(val[mode]["x"]) for mode in val])
+                x = [val[mode]["x"] for mode in val][0]
+                for i in range(points):
+                    raw = "{0:>{l}}".format(i + 1, l=ls["x"])
+                    for mode in val:
+                        try:
+                            yi = val[mode]["ycount"][i]
+                        except IndexError:
+                            yi = 0.0
+                        raw += " {0:>{l}.2f}".format(yi, l=ls[mode])
+                    f.write("{}\n".format(raw))
+
