@@ -29,10 +29,13 @@ Today, the WCN scenario is varied: in some places they are used to mitigate the 
 
 WCNs usually have a cultural background of Open Source enthusiasts and hackers^[as in "curious", not as in "criminal"] in general. Some of them are run by a formal associations, other by informal groups of citizens, but in every case node owners know each other and there is a sense of community. More experienced participants share their technical knowledge (and their time), making it possible for new members to enter the network with minimum effort.
 
-Because of their nature of not asking permissions, it is difficult to determine precisely the number of active WCNs as there is no central registry to look at. However, there is a Wikipedia page^[@_list_2014] which, albeit incomplete, lists 262 WCNs at the time of writing. The dimensions of such networks are varied, from just a handful of nodes to nearly 25,000 as in Guifi^[http://guifi.net], which is widely regarded as the world's largest WCN.
+Because of their nature of not asking permissions, it is difficult to determine precisely the number of active WCNs as there is no central registry to look at. However, there is a Wikipedia page^[@_list_2014] which, albeit incomplete, lists 262 WCNs at the time of writing. The dimensions of such networks are varied, from just a handful of nodes to nearly 25,000 as in Guifi^[<http://guifi.net>], which is widely regarded as the world's largest WCN.
 
 ## Technology
-WCNs were born together with the IEEE 802.11 protocol family and continue to use it for various reasons, such as hardware availability and low cost, unlicensed frequency spectrum operation and the constant improvement of subsequent versions. Other solutions for the pyhsical layer are sometimes used -- for example proprietary protocols, maybe operating in licensed frequencies, or even methods not based on radio^[Ronja, http://ronja.twibright.com/] -- but they are an uncommon last resort when WiFi can not work (due to interference or other reasons).
+
+![Antennas of a WCN node](images/ninux_node.png)
+
+WCNs were born together with the IEEE 802.11 protocol family and continue to use it for various reasons, such as hardware availability and low cost, unlicensed frequency spectrum operation and the constant improvement of subsequent versions. Other solutions for the pyhsical layer are sometimes used -- for example proprietary protocols, maybe operating in licensed frequencies, or even methods not based on radio^[Ronja, <http://ronja.twibright.com/>] -- but they are an uncommon last resort when WiFi can not work (due to interference or other reasons).
 
 A node of a WCN is a router connected with one or more radio interfaces. There is not a standard for the construction of a node, but over time every community has gathered some best practices and guidelines based on experience and trial-and-error. The equipment used varies from consumer WiFi routers (such as the very popular Linksys WRT54GL) with homemade antennas, to professional and more expensive equipment dedicated to long-range WiFi links. Smaller nodes, especially if they are near enough to other ones, may use a single omnidirectional antenna to connect to different nodes. Usually, however, directional antennas with a limited beam width are used, to reduce interference leveraging different channels, avoid receiving noise from all directions and achieve an higher gain. Some nodes use both kinds of antennas, directional for backbone links and omnidirectional to provides an hotspot access.
 
@@ -233,7 +236,16 @@ Using the information from the `HELLO` messages, each node can select a set of i
 This requirement essentially means that each node in the strict 2-hop neighbourhood can be reached through a MPR. The protocol specification suggests that the MPR set of each node should be as small as possible, but does not require it. Once a node has selected its MPRs, it needs to signal its choice to the neighbours, so that the selected nodes know that they must retransmit its broadcasts (and the other nodes know not to do that). `HELLO` messages are used also for this purpose: the selected MPRs are advertised with a neighbour type of `MPR_NEIGH`.
 
 ## Message forwarding
-Observing the `HELLO` messages it receives, each node populates and maintains an `MPR Selector Set`, which is the set of nodes that selected it as an MPR. In other words, it is the set of nodes whose transmissions are to be forwarded by the node in question. [*CONT...*]
+Observing the `HELLO` messages it receives, each node populates and maintains an `MPR Selector Set`. This is the set of nodes that selected it as an MPR or, in other words, the set of nodes whose transmissions are to be forwarded by the node in question.
+
+When a node receives a message (except for `HELLO` messages, which are never forwarded), it checks if the time-to-live has reached zero or if the message was already processed (by examining the duplicate set). If the message passes this preliminary checks, it is forwarded only if it was received from a selector.
+
+This strategy obviously reduces the number of times a single message is forwarded. Thanks to the construction of the MPR set, the strategy also ensures that each message can reach every node in the network.
+
+## Topology control
+The link-state information is propagated throughout the network with `Topology Control` messages (`TC`). This messages are generated only by the nodes which have been selected as MPR for some other node and propagated following the above described rules. Each `TC` message contains the identification of the node who generated the message and a list of the addresses of some of its neighbours.
+
+The OLSR specification requires that the nodes in the `MPR Selector Set` of a node be in the `TC` messages it generates. To add redundancy, each node can advertise, in addition, the neighbours selected by it as MPRs, or even all of its neighbours. The added redundancy comes at the cost of longer `TC` messages, which may be more susceptible to congestion.
 
 ## Link quality
 OLSR implements a mechanism to avoid using "bad" links (i.e. links which are usually too weak but may let `HELLO` messages pass from time to time). Since `HELLO` messages are transmitted at a regular interval, each node knows how many of them to expect from each neighbour over a period of time. Comparing this with the number of received messages it computes a measure of the Link Quality (LQ). This metric was originally only used to decide if a link was reliable enough to use. New versions of OLSR have put more importance on link quality.
@@ -251,18 +263,40 @@ In OLSR, ETX is derived directly from LQ. `HELLO` messages contain the calculate
 The three WCNs which are analysed later are Ninux, Funkeuer Wien and Funkfeuer Graz. The study considers 50 snapshots of the networks taken from ... to ... <!--TODO-->.
 
 ## Ninux
-Ninux^[http://wiki.ninux.org/] is the largest italian WCN. It was started in 2001 in Rome and now consists of about 250 active nodes, located in different "Ninux islands" all over Italy.
-The analysis considered only the biggest connected island, with 132 nodes and 154 links ($\left< k \right> \simeq 2.333$).
 
-OLSR is used as the routing protocol inside islands, while the islands are connected together using tunnels.
+![Ninux logo](images/ninux_logo.png) Ninux^[<http://wiki.ninux.org/>] is the largest italian WCN. It was started in 2001 in Rome and now consists of about 250 active nodes, located in different "Ninux islands" all over Italy. The name "Ninux" originally was a tribute to the project founder, Nino, but now the project members usually take it with the meaning "Neighbourhood Internet, Network Under eXperiment".
 
-## FFWien
-FunkFeuer^[http://www.funkfeuer.at/] is the collective name of different WCNs in Austria. FunkFeuer Wien^[http://www.funkfeuer.at/Vienna.206.0.html?&L=1] (FFWien) is the biggest, with 237 nodes and 433 links ($\left< k \right> \simeq 3.654$) and it covers, according to the website, 1/3 of Wien (Vienna).
+Ninux is managed in an informal way: every member is the owner and responsible of its node (or nodes), but there is no formal association. This is a deliberate choice of the Ninux community, motivated by the excessive bureaucratic effort it would require. Moreover, all associations must have a president responsible for the activities of the association itself, and Ninux members prefer the responsibility to be decentralised (as the network is).
 
-## FFGraz
-FunkFeuer Graz^[http://graz.funkfeuer.at/] (FFGraz) is the "smaller sister" of the FFWien network, situated in the homonymous city. It consists of 144 nodes and 199 edges ($\left< k \right> \simeq 2.764$).
+The different islands use a variety of protocols and have different topologies:
 
-Both FFWien and FFGraz also use OLSR as a routing protocol. It should be noted, however, that the versions of OLSR used in practice in WCNs do not behave exactly as the specification of the protocol mandates. The next section discusses both OLSR and the differences between the standard and the real cases.
+  * in Pisa, Sicily and Friuli there are three mesh networks, with routing based on B.A.T.M.A.N.
+  * in Rome, the biggest Ninux island uses a backbone with point-to-point links combined with some mesh areas, employing OLSR for all the routing
+  * in recent years other networks have been created in Florence, Viterbo, Catanzaro, Cosenza and Reggio Calabria, all based on OLSR
+
+The islands are connected together by tunnels using a variety of protocols.
+
+Ninux is an Autonomous System (AS# 197835)^[<https://apps.db.ripe.net/search/query.html?searchtext=AS197835&object_type=aut-num#resultsAnchor>] and it is a member of the NaMeX^[<http://www.namex.it/en/who/members>] Internet Exchange Point.
+
+In this work, the biggest Ninux island has been analyzed (since it is the biggest OLSR routing domain), which is Rome's newtork. It consists of 132 nodes connected by 154 links (average degree of 2.333).
+
+![Map of the Rome Ninux island](images/ninux_map.png)
+
+## FunkFeuer: Wien
+FunkFeuer^[<http://www.funkfeuer.at/>] is a project that comprises networks in different parts of Austria (Vienna, Graz, parts of Weinviertel and Bad Ischl). The literal meaning of "funkfeuer" in german is "radio beacon". FunkFeuer is also a registered association in Austria, differently from Ninux.
+
+The origins of FunkFeuer are in the experiments of an austrian ISP based in Vienna, Silver Server, which, during the 1990s, explored the commercial viability of wireless radio data links.
+After a test phase, Silver Server ultimately decided that the technology was not ready to be used commercially; however, the infrastructure was already in place and it was handed off to two associations, Team Teichenberg and Public Voice Lab.
+With direction from Franz Xaver and Roland Jankowski, they further expanded the network, bringing the node count to 15, but failed to create easy end-user access.
+
+The network was ultimately decentralised, giving the opportunity to the citizens to buy the hardware of the nodes.
+The advent of cheap GNU/Linux based embedded WiFi products promoted the growth of the network and an association was founded to have a more structured organisation and address the issues of decentralisation. The existence of a formal association also enables to request sponsoring from local administrations.
+
+FunkFeuer Wien (FFWien)^[<http://www.funkfeuer.at/Vienna.206.0.html?&L=1>] is the biggest of FunkFeuer networks, covering 1/3 of the city. The active node in the analysed snapshots were 237, with 433 links (an average degree of 3.654).
+
+## FunkFeuer: Graz
+FunkFeuer Graz (FFGraz)^[<http://graz.funkfeuer.at/>] is the "smaller sister" of the FFWien network, situated in the homonymous city.
+It was founded after FFWien by Othmar Gsenger, Erwin Nindl and Roland Jankowski and has its own association to apply for local sponsoring. It consists of 144 nodes and 199 edges, with an average degree of 2.764. ![Map of the FFGraz network](images/graz_map.png)
 
  Degree     Ninux   FFWien   FFGraz
 -------- -------- -------- --------
