@@ -118,7 +118,14 @@ Betweenness centrality of vertex $v$ is defined as the fraction of shortest path
 C_B(v) = \sum_{s,t \in V} \frac{\sigma(s,t|v)}{\sigma(s,t)} %_
 \end{equation}
 
-Betweennes centrality is especially useful in the study of communication networks because information usually travels through the shortest path, so $C_B$ helps estimating how much traffic a node will see, in a way other centrality measures do not consider. For example, in the classic Barbell graph -- two complete graphs connected by a path -- vertices on the path have a very small degree but since every path between the two complete graphs passes through them they have high betweenness. This reflects the great control they have over the communications between other nodes.
+Betweennes centrality is especially useful in the study of communication networks because information usually travels through the shortest path, so $C_B$ helps estimating how much traffic a node will see, in a way other centrality measures do not consider. For example, in the classic Barbell graph -- two complete graphs connected by a path -- vertices on the path have a very small degree but since every path between the two complete graphs passes through them they have high betweenness. This reflects the big control they have over the communications between other nodes.
+
+#### Edge betweenness centrality
+The concept of betweenness centrality can also be easily extended to edges, with a similar notation.
+
+\begin{equation}
+C_{E}(e) = \sum_{s,t \in V} \frac{\sigma(s,t|e)}{\sigma(s,t)}
+\end{equation}
 
 #### Closeness centrality
 Closeness centrality is also based on shortest paths, but has a different approach and a different meaning. It is based on the mean distance between $v$ and the other vertices. If $d_{vu}$<!--_--> is the geodesic distance between $v$ and $u$, the *mean geodesic distance* from $v$ to $u$, averaged over all vertices $u$ is
@@ -173,7 +180,7 @@ Optimized Link State Routing (OLSR) is a proactive routing protocol standardized
 
 In link state routing protocols, each node is supposed to know the entire topology of the network in order to calculate the routes. This means that each time the topology changes, the new information must be propagated to every node. This is traditionally done by flooding link-state advertisement packet through the network. 
 
-In the case of traditional networks with wired links, this method is acceptable since the topology seldom changes. In WCN (and wireless networks in general), however, links change their cost quite often and may also disappear temporarily. Flooding in this situation imposes a great effort on the network and may degrade the performance consistently.
+In the case of traditional networks with wired links, this method is acceptable since the topology seldom changes. In WCN (and wireless networks in general), however, links change their cost quite often and may also disappear temporarily. Flooding in this situation imposes a big effort on the network and may degrade the performance consistently.
 
 OLSR addresses this concern with an optimized flooding mechanism which significantly reduces the overhead by using only selected nodes, called multipoint relays (MPRs), to broadcast link-state advertisements. The next sections outline the details of this mechanism and of OLSR in general.
 
@@ -320,7 +327,7 @@ It was founded after FFWien by Othmar Gsenger, Erwin Nindl and Roland Jankowski 
       20     0.00     0.62     0.00
       21     0.00     0.06     0.00
 
-Table: Average degree frequencies in the three WCNs, over 50 samples
+  : Average degree frequencies in the three WCNs, over 50 samples
 
 ![Degree distributions of the three WCNs, compared with the Erd\H{o}s-Rényi and Barabási-Albert models](synthetic_topologies/results/20140626-1629/degree_distribution.png)
 
@@ -346,7 +353,7 @@ S = \frac{|C_0|}{|V|}
 
 ## Removal order
 Nodes and links in a network are not all equal. As seen in [Chapter 3](#network_topology_and_graphs), different centrality metrics give different measures of the importance of a node in a network.
-When considering robustness, it is interesting to study which nodes have the greatest impact when removed and how much difference there is between more and less impacting nodes.
+When considering robustness, it is interesting to study which nodes have the biggest impact when removed and how much difference there is between more and less impacting nodes.
 
 The classical approach to percolation is to remove nodes randomly in an uniform way. Also popular is the removal of the nodes with highest degree first. Other methods, such as ordering by centrality, have also been explored.
 Comparing this different methods gives not only useful information on how the metrics predict the impact of a node when removed, but also on the behaviour of the examined networks.
@@ -359,24 +366,44 @@ All of the above considerations are also valid for links, but the metrics differ
 This analysis covers random removal of both nodes and links, removal of links by betweenness centrality and of nodes by degree, betweenness and closeness centrality.
 
 ## Comparing different networks
-To obtain meaningful results, the synthetic graphs generated with th random models need to be comparable with the real topologies at least in some aspects, the most obvious being average degree.
-In order to achive this, the parameters of the generators must be adjusted remembering that:
+The objective of doing a robustness analysis on WCNs, apart from determining their resilience to failure, is also understanding if the presently used random models are useful in describing their behaviour.
 
-* for the Erd\H{o}s-Rényi model, the expected average degree is 
+One feature of networks that highly influences their robustness is the density of links with respect to nodes. Intuition suggests that a network with more links should be more robust of a less dense one with the same number of nodes. This is in fact confirmed.
 
-\begin{equation}
-\left< k \right> = \frac{2 \binom{n}{2} p}{n}
-= \frac{2}{n} \frac{n!}{2! (n-2)!} p
-= \frac{1}{n} \frac{(n)(n-1)(n-2)!}{(n-2)!} p = (n-1)p
-\end{equation}
+Keeping this in mind, any robustness comparison between two networks is significant if the networks have comparable densities. It is of no use comparing a 100-node network with 200 edges to one with 2000.
 
-* for the Barabási-Albert model the exact average degree is known
+To express the density of a graph, the average degree may be used. Recall the three WCNs which are the subject of this analysis have average degrees 2.333, 3.654 and 2.764. Since they are to be compared to graphs generated by random models, care must be taken to generate graphs with an averare degree not too distant from those.
 
-\begin{equation}
-\left< k \right> = \frac{2 (n-m)m}{n}
-\end{equation}
+The average degree of random graphs can be predicted easily, given the parameters:
 
-In the second case, since $m \in \mathbb{N}$, the value of $\left< k \right>$ can not be controlled precisely once fixed $n$.
+  * for the Erd\H{o}s-Rényi $G(n,p)$ model, the expected average degree is 
+
+    \begin{equation}
+    \left< k \right> = \frac{2 \binom{n}{2} p}{n} = (n-1)p
+    \end{equation}
+
+  * for the Barabási-Albert preferential attachment model the exact average degree is known
+
+    \begin{equation}
+    \left< k \right> = \frac{2 (n-m)m}{n} = 2m\left( 1 - \frac{m}{n} \right)
+    \end{equation}
+
+Unfortunately, while the $p$ parameter of the $G(n,p)$ model is a real number and can be adjusted at will, the preferential attachment models requires a natural number $m$. This means that only some values of average degree can be achieved.
+
+---------------------- ------- ------- ------- ------- ------- -------
+  $m$                   1       2       3       4       5       6     
+  $\left< k \right>$    1.99    3.96    5.91    7.84    9.75    11.64 
+---------------------- ------- ------- ------- ------- ------- -------
+  : Average degrees for a 200-node graph with the Barabási-Albert model
+
+## Methodology
+The analysis was performed on 50 recent snapshots of the topology of the three WCNs, as well as 30 graphs for each of the random models.
+
+The algorithm simply removed nodes (or links) one by one and checked the size of the largest connected component. In the case of random removal, the test was repeated 30 times for each graph, changing the order every time.
+
+The test considered the removal of at most 40% of the nodes (or links). Other values have been tried, but this was determined to be sufficient to observe the expected behaviour. Highest values just increased the simulation time without adding useful information.
+
+The results were averaged over the graphs of the same kind and normalized over the fraction of removed nodes, rather then the number of nodes, in order to compare them in the same graph.
 
 ## Results
 
@@ -386,7 +413,17 @@ In the second case, since $m \in \mathbb{N}$, the value of $\left< k \right>$ ca
 
 ![Removal by betweenness centrality](./synthetic_topologies/results/20140618-1529/nodes_bet_robustness.png)
 
-As can be seen in figure 1-3, the networks have a similar behaviour when removing random nodes, but in the "attack" scenarios they exhibit very different properties. Of course, removing the more central nodes makes the networks fail much sooner, but there are marked differences.
+As shown in the figures, there is a marked difference between the behaviour of the three WCNs (which is similar) and the behaviour of the random graphs.
+The WCNs are more fragile in all tests, but while the difference in the random removal case may be explained by the lower density, in all of the ordered removal cases the consistently fail after just the 10% of removed nodes.
+
+The scale-free random networks is, as expected, less robust than the Erd\H{o}s-Rényi model in targeted attack to nodes with the highest degree, and shows the same proceeding with removal by betweenness. On the other hand, removing nodes by closeness centrality does not really show a big difference between the two models.
+
+WCNs, on the contrary, behave the same in all the scenarios in which nodes are removed in order, independently from the metric used. This suggest that, in those networks, the central nodes are the same for all the metrics.
+This also means that the topology of WCNs, despite the big similarity of the degree distribution, is different from the preferential attachment model. Moreover, this difference seems to go in the direction of less robustness.
+
+The removal of links also shows a similar picture. None of the random models approximates well the behaviour of the WCNs, which quickly fail after a small fraction of links has been removed.
+Here a peculiar behaviour appears in FFGraz: in this network, there are some nicely connected areas that are geographically distant between themselves, so there are some long links that provide connection between those clusters.
+These long links are apparently (and intuitively) the ones with the highest centrality, so the first to be removed.
 
 # Message propagation analysis
 
