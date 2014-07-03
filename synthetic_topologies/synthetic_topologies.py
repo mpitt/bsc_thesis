@@ -9,9 +9,14 @@ import matplotlib
 matplotlib.use('Agg')
 matplotlib.rcParams['figure.figsize'] = 12, 12 
 matplotlib.rcParams['figure.dpi'] = 1200
+matplotlib.rcParams['axes.labelsize'] = 20
+matplotlib.rcParams['legend.fontsize'] = 20
+matplotlib.rcParams['xtick.labelsize'] = 18
+matplotlib.rcParams['ytick.labelsize'] = 18
+matplotlib.rcParams['svg.fonttype'] = 'none'
 import matplotlib.pyplot as plt
 from multiprocessing import Process, Queue
-from scipy import optimize
+# from scipy import optimize
 import random
 from string import split
 
@@ -56,14 +61,14 @@ class dataParser():
         x = degreeDistribution.keys()
         y = degreeDistribution.values()
 
-        fitfunc = lambda p, x: p[0] * x ** (p[1])
-        errfunc = lambda p, x, y: (y - fitfunc(p, x))
+        # fitfunc = lambda p, x: p[0] * x ** (p[1])
+        # errfunc = lambda p, x, y: (y - fitfunc(p, x))
 
-        out, success = optimize.leastsq(
-            errfunc,
-            [1, -1],
-            args=(x, y)
-        )
+        # out, success = optimize.leastsq(
+        #     errfunc,
+        #     [1, -1],
+        #     args=(x, y)
+        # )
         #fittedValue = [out[0] * (v ** out[1]) for v in x]
         q.put({"x": x, "y": y, "ycount": ycount})
   
@@ -205,7 +210,7 @@ class dataPlot:
                 ci = self.yCI[dataDimension]
                 ax.errorbar(x, y, yerr=ci, fmt=style, **kwargs)
             else:
-                ax.plot(x, y, style, **kwargs)
+                ax.loglog(x, y, style, **kwargs)
             dataDimension += 1
         if self.xright is not None:
             ax.set_xlim(right=self.xright)
@@ -361,12 +366,18 @@ if __name__ == "__main__":
                 plot.x.append(val[mode]["x"])
                 plot.y.append(val[mode]["y"])
         if s == "degdist":
+            x = np.arange(50)
+            y = x ** -2.0
+            plot.x.append(x)
+            plot.y.append(y)
+            plot.series_labels.append(r'$k^{-2}$')
             plot.title = "Degree distribution"
             plot.xAxisLabel = "Degree"
             plot.yAxisLabel = "Frequency"
             plot.legendPosition = "center right"
             plot.outFile = resultDir + "/degree_distribution"
-            plot.plotData(style="o:")
+            # plot.plotData(style="o:")
+            plot.plotData()
         else:
             for mode in graphs:
                 if mode in val:
@@ -379,7 +390,7 @@ if __name__ == "__main__":
             plot.plotData(style="o:")
 
     for s, val in retValues.items():
-        with open("{}/{}".format(resultDir, s), "w+") as f:
+        with open("{}/{}.txt".format(resultDir, s), "w+") as f:
             if s == "degdist":
                 title = " Degree "
                 ls = {}

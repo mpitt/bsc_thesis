@@ -252,8 +252,10 @@ The link-state information is propagated throughout the network with `Topology C
 
 The OLSR specification requires that the nodes in the `MPR Selector Set` of a node be in the `TC` messages it generates. To add redundancy, each node can advertise, in addition, the neighbours selected by it as MPRs, or even all of its neighbours. The added redundancy comes at the cost of longer `TC` messages, which may be more susceptible to congestion.
 
+The links between an MPR and the neighbours that it does not advertise in `TC` messages effectively disappear from the topology which is known to other nodes. Thus, nodes in OLSR have only a partial knowledge of the network and can calculate routes with this incomplete information.
+
 ## Link quality
-OLSR implements a mechanism to avoid using "bad" links (i.e. links which are usually too weak but may let `HELLO` messages pass from time to time). Since `HELLO` messages are transmitted at a regular interval, each node knows how many of them to expect from each neighbour over a period of time. Comparing this with the number of received messages it computes a measure of the Link Quality (LQ). This metric was originally only used to decide if a link was reliable enough to use. New versions of OLSR have put more importance on link quality.
+OLSR implements a mechanism to avoid using "bad" links (links which are usually too weak but may let `HELLO` messages pass from time to time). Since `HELLO` messages are transmitted at a regular interval, each node knows how many of them to expect from each neighbour over a period of time. Comparing this with the number of received messages it computes a measure of the Link Quality (LQ). This metric was originally only used to decide if a link was reliable enough to use. New versions of OLSR have put more importance on link quality.
 
 It is common in WCNs to use the ETX metric to express link quality. ETX stands for Expected Transmission Count and was proposed in @de_couto_high-throughput_2004. It indicates the expected number of transmissions (including retransmissions) required to successfully deliver a packet.
 
@@ -263,9 +265,28 @@ In OLSR, ETX is derived directly from LQ. `HELLO` messages contain the calculate
 \etx = \frac{1}{\linkq \cdot \nlq}
 \end{equation}
 
+## Use of LQ in MPR selection
+The euristic proposed in the RFC to compute the MPR set of a node gives no importance to link quality. This means that a node could choose as an MPR a neighbour with a weak connection.
+Since MPRs advertise the route to their selectors, this weak link may end up being used in place of a better one, beacuse the latter is not shared with an MPR.
+
+To address this issue, it has been proposed to use an algorithm for selecting MPRs that accounts for link quality. Unfortunately, the rapidly changing nature of link quality causes instability in the MPR set. This in turn causes MPRs to generate `TC` messages more often, leading to an increase in signalling, the exact opposite of the reason why MPR were introduced in the first place.
+
+To avoid this effect, but still ensure that good links are not discarded for weak ones, the implementation of OLSR used by the analysed WCNs forces each node to be an MPR. Every node has thereby the complete knowledge of the network topology.
+
 # The analysed networks
 
-The three WCNs which are analysed later are Ninux, Funkeuer Wien and Funkfeuer Graz. The study considers 50 snapshots of the networks taken from ... to ... <!--TODO-->.
+The three WCNs which are analysed later are Ninux, Funkeuer Wien and Funkfeuer Graz. The study considers 50 snapshots of the networks taken in January 2014.
+
+|                 | Ninux    | FFWien   | FFGraz   |
+|----------------:|:--------:|:--------:|:--------:|
+|date             | 20/01/14 | 13/01/14 | 13/01/14 |
+|snapshot interval| 5 min    | 5 min    | 10 min   |
+|timespan         | 4h 10min | 4h 10min | 8h 20min |
+
+The snapshots were obtained by the interpolation of the OLSR topology exported directly by the routing daemons on the nodes (since each node has the complete knowledge of the topology) and information published (or otherwise provided) by the communities.
+
+Some supernodes with several antennas make each of them run OLSR as an independent node, connecting them to a switch. These cases have been considered a single node for the purpose of this analysis, since they represent devices in a single location, run by a single person and connected to a single power source.
+Moreover, this type of configuration is being replaced by a more efficient one, which uses a single router running OLSR. The separate devices are then configured as simple 802.11 Access Points/clients and connected to the router using separate VLANs.
 
 ## Ninux
 
@@ -303,6 +324,8 @@ FunkFeuer Wien (FFWien)^[<http://www.funkfeuer.at/Vienna.206.0.html?&L=1>] is th
 FunkFeuer Graz (FFGraz)^[<http://graz.funkfeuer.at/>] is the "smaller sister" of the FFWien network, situated in the homonymous city.
 It was founded after FFWien by Othmar Gsenger, Erwin Nindl and Roland Jankowski and has its own association to apply for local sponsoring. It consists of 144 nodes and 199 edges, with an average degree of 2.764. ![Map of the FFGraz network](images/graz_map.png)
 
+## Initial comparison
+
  Degree     Ninux   FFWien   FFGraz
 -------- -------- -------- --------
        1    69.02    77.96    64.72
@@ -329,7 +352,14 @@ It was founded after FFWien by Othmar Gsenger, Erwin Nindl and Roland Jankowski 
 
   : Average degree frequencies in the three WCNs, over 50 samples
 
-![Degree distributions of the three WCNs, compared with the Erd\H{o}s-Rényi and Barabási-Albert models](synthetic_topologies/results/20140626-1629/degree_distribution.png)
+![Degree distributions of the three WCNs, compared with the Erd\H{o}s-Rényi (e-r) and Barabási-Albert (b-a) models](graphs/degree_distribution.pdf)
+
+As Figure *??* shows, the degree distributions of the three WCNs roughly follow a power law $k^{-2}$, as does the random Barabási-Albert model. One objective of this analysis is to understand if the model can be used to predict other properties of the real networks.
+
+![Links of the three WCNs, ranked by probability to lose packets](graphs/weight_rank.pdf)
+
+As can be seen in figure *??*, the three networks have a quite different distribution of link quality (the metric shown in the graph is $1 - \frac{1}{\etx}$, which is also used for the signalling analysis in chapter 5*??*).
+FunkFeuer Graz has by far the highest average weight, while Ninux seems to have the best links.
 
 # Robustness analysis
 The first metric analysed is the robustness of the network. The chosen methodology is a variation of the percolation process described in Chapter 16 of [@newman_networks:_2010].<!--_-->
@@ -345,7 +375,7 @@ If enough nodes are removed, the network will become disconnected, but usually t
 It can be affirmed that in such a situation, at least part of the network is still working as intended.
 Removing even more nodes, however, leads to a point where the largest component does not contain a significat fraction of the nodes -- it becomes indistinguishable from the smaller ones. This is the point in which the network loses all its function.
 
-To formally define a robustness metric, name the connected components of a graph, ordered non-increasingly by the numer of their nodes, $C_0, \ldots, C_m$. $|C_0|$ is then the order (number of nodes) of the largest connected component. The robustness metric is defined as
+To formally define a robustness metric, name the connected components of a graph, ordered non-increasingly by the number of their nodes, $C_0, \ldots, C_m$. $|C_0|$ is then the order (number of nodes) of the largest connected component. The robustness metric is defined as
 
 \begin{equation}
 S = \frac{|C_0|}{|V|}
@@ -397,13 +427,13 @@ Unfortunately, while the $p$ parameter of the $G(n,p)$ model is a real number an
   : Average degrees for a 200-node graph with the Barabási-Albert model
 
 ## Methodology
-The analysis was performed on 50 recent snapshots of the topology of the three WCNs, as well as 30 graphs for each of the random models.
+The analysis was performed on 50 snapshots of the topology of the three WCNs, as well as 30 graphs for each of the random models.
 
 The algorithm simply removed nodes (or links) one by one and checked the size of the largest connected component. In the case of random removal, the test was repeated 30 times for each graph, changing the order every time.
 
 The test considered the removal of at most 40% of the nodes (or links). Other values have been tried, but this was determined to be sufficient to observe the expected behaviour. Highest values just increased the simulation time without adding useful information.
 
-The results were averaged over the graphs of the same kind and normalized over the fraction of removed nodes, rather then the number of nodes, in order to compare them in the same graph.
+The results were averaged over the graphs of the same kind and expressed in term of fraction of removed nodes, rather than number of nodes, in order to compare them in the same graph.
 
 ## Results
 
@@ -414,9 +444,9 @@ The results were averaged over the graphs of the same kind and normalized over t
 ![Removal by betweenness centrality](./synthetic_topologies/results/20140618-1529/nodes_bet_robustness.png)
 
 As shown in the figures, there is a marked difference between the behaviour of the three WCNs (which is similar) and the behaviour of the random graphs.
-The WCNs are more fragile in all tests, but while the difference in the random removal case may be explained by the lower density, in all of the ordered removal cases the consistently fail after just the 10% of removed nodes.
+The WCNs are more fragile in all tests, but while the difference in the random removal case may be explained by the lower density, in all of the ordered removal cases they consistently fail after just 10% of nodes are removed.
 
-The scale-free random networks is, as expected, less robust than the Erd\H{o}s-Rényi model in targeted attack to nodes with the highest degree, and shows the same proceeding with removal by betweenness. On the other hand, removing nodes by closeness centrality does not really show a big difference between the two models.
+The scale-free random networks is, as expected, less robust than the Erd\H{o}s-Rényi model in targeted attack to nodes with the highest degree, and has the same proceeding with removal by betweenness. On the other hand, removing nodes by closeness centrality does not really show a big difference between the two models.
 
 WCNs, on the contrary, behave the same in all the scenarios in which nodes are removed in order, independently from the metric used. This suggest that, in those networks, the central nodes are the same for all the metrics.
 This also means that the topology of WCNs, despite the big similarity of the degree distribution, is different from the preferential attachment model. Moreover, this difference seems to go in the direction of less robustness.
@@ -425,109 +455,70 @@ The removal of links also shows a similar picture. None of the random models app
 Here a peculiar behaviour appears in FFGraz: in this network, there are some nicely connected areas that are geographically distant between themselves, so there are some long links that provide connection between those clusters.
 These long links are apparently (and intuitively) the ones with the highest centrality, so the first to be removed.
 
+The inadequacy of the preferential attachment model to predict the robustness of WCNs deserves some considerations.
+Despite the degree distributions following in both cases a power law, the robustness metrics behave quite differently, so it is worth considering what are the features of real world networks the model does not account for.
+Firstly, on thing that can be noticed is that the preferential attachment model builds a graph with no leaves. With $m = 2$, which is the parameter used in this analysis, the graph at step zero is two vertices without links, at step 1 it is a path of length 2, at step 2 it is either a square or a triangle with a leaf.
+
 # Message propagation analysis
 
-### The importance of routing
+## The importance of signalling
 The robustness of a network is based on a static analysis of the connectivity of the network graph when removing nodes or links. A communication network, however, is a dynamic system where information needs to move between nodes. Moreover, the decentralised nature of computer networks means that the complete topology of the network is not necessarily the topology used to transmit information, depending on the routing protocol used for the network.
 
-Given this, in order to understand the behaviour of a communication network we need to study the behaviour of its routing protocol with different underlying topologies. We are interested in the phase of topology discovery, where each node receives information on the existence of the other nodes in the network and (part of) the route to reach them.
+Given this, in order to understand the behaviour of a communication network it is necessary to study the behaviour of its routing protocol with different underlying topologies. The phase analysed here is that of topology discovery, where link-state advertisements are exchanged and each node receives information on the existence of the other nodes in the network and a route to reach them.
 
-Topology discovery in link state routing protocols is usually performed with each node flooding the network with some kind of link-state advertisement message. The possible variations are the flooding policy and the contents of the message. The most popular routing protocols used in mesh networks behave as follows:
+In traditional link-state routing protocols, link-state advertisement messages are usually flooded through the network with a simple duplicate detection mechanism to avoid broadcast storms.
 
-* B.A.T.M.A.N. uses the simplest possible flooding (each node just performs a duplicate detection to avoid loops) and the advertisement message contains the sender address and a sequence number (for the duplicate detection)
-* OLSR employs a more sophisticated flooding mechanism based on MPRs and the advertisement message contains the whole neighbourhood of the sender
-* versions of OLSR used in practice usually force each node to be an MPR ^[@maccari_analysis_2013], thus having an hybrid behaviour with flooding as in B.A.T.M.A.N.
+OLSR uses a more sophisticated technique to reduce the overhead of routing. This of course comes at a cost in redundancy, since if a link loses `TC` messages, these are not received through other routes.
+OLSR also has `HELLO` messages, which are only exchanged with neighbours and allow `TC` messages, which are only generated by MPRs, to contain information about all the neighbours of the node which generates them.
 
-### Problem definition
-The network is represented by a weighted graph $G=(V,E)$, where weights represent the probability of losing a packet on each link (we use the ETX metric of OLSR for this purpose).
+The implementation of OLSR used in WCNs differs from the specification and forgoes optimization by forcing each node to be an MPR.
 
-Each node creates a message with information on its neighbourhood and propagates it to each neighbour. Each node also propagates the message it receives, with a simple duplicate detection based on the sender to avoid loops.
+All of this three variants of signalling have been simulated on the topologies of the analysed networks, thus having:
 
-Further iterations of the analysis will consider a subset of nodes generating and propagating the messages and a different protocol for loop avoidance.
+  * simple flooding of messages with information on the sender node only (L-S)
+  * simple flooding of messages with information on the sender and its neighbours (WCN)
+  * optimized floodings (with MPRs) of messages with information on the sender MPR node and its neighbours (OLSR)
 
-Given the above situation, we define
+## Simulation algorithm
+The signalling on an unreliable network (a network which may lose packets) is simulated with an algorithm similar to a Breadth-First Search (BFS) on a graph, with an important variation: while the BFS always proceeds with the neighbours of a node, signals may fail propagating on some links.
 
-> $T_u = \forall v \in N .$ ``node $v$ has a route to node $u$''
+The network is represented by a weighted graph $G=(V, E)$, where link weights correspond to the probability of losing a packet on that link ($1 - \frac{1}{\etx}$).
+Instead of adding all the neighbours to the queue of the BFS, a random number is generated (between 0 and 1) for each of them and compared to the weight of the respective link.
+If the generated number is bigger, the signal propagates successfully and the neighbour is added to the queue, otherwise the transmission fails.
 
-> $R_u = \forall v \in N .$ ``node $u$ has a route to node $v$''
+A set of visited nodes is maintained and used to avoid duplicates. Before forwarding, conditions on MPRs are also checked, in the OLSR scenario.
 
-Determine the probability of $T_u$ and $R_u$ for each node $u$ in the graph.
+Since this is a probabilistic simulation, the algorithm was run 1000 times and the results were averaged.
 
-### Methodology
-The propagation of a message with duplicate detection can be simulated with a Breadth First Search (BFS) over the graph. The most important variation is that before traversing an edge a random number is generated and compared to the packet loss probability of that link, to check if the transmission succeeds.
-During the BFS, the simulation keeps track of which nodes received the message and based on the content of the message determines the couples of nodes which have a known route between themselves.
-The search is repeated for every node as the starting point. The union of the results is then used to verify $T_u$ and $R_u$.
+For each run, the results are saved in a binary matrix $R(x)$ of size $|V| \times |V|$. The matrix initially contains all 0s. When a node $v_j$ receives a message with information on a set $V'$ of nodes, elements $R(x)_{ij}$ are set to 1 $\forall v_i \in V'$.
 
-The random simulation is run 1000 times to gather a significant figure of the probability of $T_u$ and $R_u$.
+One message is generated for each node (only for MPRs in the OLSR scenario) and propagated as far as possible. After every message has stopped propagating, two metrics are measured.
 
-The propagation for a node is as follows in pseudocode:
+\begin{equation}
+T_i(x) = \sum_{j=1}^{|V|} R(x)_{ij},\, x \in [1..1000]
+\end{equation}
 
-#####function propagate(Graph g, Node u)
-```
-message_sender <- u
-message_content <- neighbourhood_of(u)
-q <- Queue()
-route_knowledge <- set()
-u.visited <- True
-for v in u.neighbours append (u,v) to q
-while q is not empty do
-    pop (u,v) from q
-    n <- random()
-    if (not v.visited) and (n ≥ weight(u,v))
-        v.visited <- True
-        for i in message_content
-            add (i,v) to route_knowledge
-        for w in v.neighbours append (v,w) to q if w ≠ u
-return route_knowledge
-```
+\begin{equation}
+T_i'(x) = \sum_{j=1}^{|V|} R(x)_{ji},\, x \in [1..1000]
+\end{equation}
 
-The function is run for each node in the graph an the results are collected.
+The averages over all runs of these metrics estimate respectively the expected number of nodes that receive information about $v_i$ and the expected number of nodes that $v_i$ receives information about.
+These are then normalised with respect to $|V|$, obtaining
 
-#####function propagate_all(Graph g)
-```
-rk <- set()
-t, r <- array()
-for u in g
-    rk <- rk ∪ propagate(g, u)
-for u in g
-    if (u,v) ∈ rk ∀ node v ≠ u
-        t[u] <- 1
-    else
-        t[u] <- 0
-    if (v,u) ∈ rk ∀ node v ≠ u
-        r[u] <- 1
-    else
-        r[u] <- 0
-return t, r
-```
+\begin{equation}
+t_i = \frac{1}{|V|} 
+      \left( \frac{1}{1000} \sum_{x=1}^{1000} T_i(x) \right)
+\end{equation}
 
-#####function run_simulation(Graph g, Integer n)
-```
-pt, pr <- array()
-for n times
-    t, r <- propagate_all(g)
-    pt += t                                % sum each element
-    pr += r                                % "
-divide each element of pt by n
-divide each element of pr by n
-return pt, pr
-```
+\begin{equation}
+t_i' = \frac{1}{|V|}
+       \left( \frac{1}{1000} \sum_{x=1}^{1000} T_i'(x) \right)
+\end{equation}
 
-### Rationale
-The feasibility of calculating $T_u$ and $R_u$ exactly has been evaluated. However, the computational complexity of this approach seems very high and likely does not justify its use in place of the Monte Carlo simulation.
+These quantities were chosen in order to understand the efficiency of different signalling methods in networks, considering the real efficiency of their links.
 
-Going into the details, the probability of a message propagating from node $u$ to node $v$ is easily calculated by... ~~summing the probabilities of success for every simple path between the two nodes.~~ With this result for every possible destination $v1\ldots vn$ of a message transmitted by $u$, it's theoretically possible to calculate $T_u$ but it's not easy: the events "reaching v1"..."reaching vn" are not independent, so the probability of "reaching every node" is not the product of their probabilities.
+## Results
 
-For example, if $w$ is in any simple path from $u$ to $v$, the probability of success between $u$ and $v$ changes if it is known that node $w$ has been reached.
-
-$P(v) = P(w) \cdot P(v|w) + P(\lnot w) \cdot P(v|\lnot w)$
-
-The value of $P(v|w)$ and $P(v|\lnot w)$ is not so obvious:
-
-* $P(v|w)$ is the sum of the probabilities of the subpaths $w \rightarrow v$ for every simple path $u→v$
-* $P(v|\lnot w)$ is the sum of the probabilities of success for simple paths from $u$ to $v$ excluding the paths that contain $w$
-
-This must be computed for every $w$ that appears in at least one simple path $u \rightarrow v$. Again, this computation must be repeated for every possible source-destination pair $u,v$.
 
 # Conclusions
 

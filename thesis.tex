@@ -48,28 +48,24 @@
             linkcolor=magenta,
             pdfborder={0 0 0}}
 \urlstyle{same}  % don't use monospace font for urls
-\usepackage[normalem]{ulem}
-% avoid problems with \sout in headers with hyperref:
-\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{6pt plus 2pt minus 1pt}
 \setlength{\emergencystretch}{3em}  % prevent overfull lines
 \setcounter{secnumdepth}{0}
+\newcommand{\st}{\text{ st. }}
+\newcommand{\etx}{\mathrm{ETX}}
+\newcommand{\linkq}{\mathrm{LQ}}
+\newcommand{\nlq}{\mathrm{NLQ}}
+\newcommand{\mpr}{\mathrm{MPR}}
+\newcommand{\mss}{\mathrm{MSS}}
+\chapterstyle{section}
 
 \title{Advanced Topology Analysis in Three Wireless Community Networks}
 \author{Michele Pittoni}
 \date{2014 - VI}
 
 \begin{document}
-\maketitle
-
-\newcommand{\st}{\text{ st. }}
-\newcommand{\etx}{\mathrm{ETX}}
-\newcommand{\linkq}{\mathrm{LQ}}
-\newcommand{\nlq}{\mathrm{NLQ}}
-\newcommand{\mpr}{\mathrm{MPR}}
-
-\chapterstyle{section}
+\tableofcontents
 
 \chapter*{Introduction}\label{introduction}
 \addcontentsline{toc}{chapter}{Introduction}
@@ -91,44 +87,51 @@ comparison with some well known random network models.
 
 \chapter{Wireless Community Networks}\label{wireless-community-networks}
 
-The phrase ``Wireless Community Network'' has been used in literature to
-indicate various kinds of projects. The most common usage refers to
+The term ``Wireless Community Network'' (WCN) is used in literature to
+indicate various kinds of networks. The most common usage refers to
 wireless mesh networks operated by a community of citizens, as opposed
-to those controlled by a single entity (corporation or government).
+to those controlled by a single entity (corporations or governments).
 Other authors also use the term for the public hotspot networks run by
 municipalities, or more generally for networks that provide wireless
 connection to the public. In this document the term is used with the
 first meaning, only for networks which are run -- not merely accessible
 -- by the community.
 
+
 \section{History}\label{history}
 
-The appearence of the first Wireless Community Networks can be dated to
-the late 1990s-early 2000s, when the IEEE 802.11 protocol (WiFi) was
-first introduced. They started as experiments by radio enthusiasts who
+The appearance of the first Wireless Community Network can be dated to
+the late 1990s-early 2000s, when the IEEE 802.11 protocol (Wi-Fi) was
+first introduced.
+
+They started as experiments by radio enthusiasts who
 wanted to explore the potential of this new technology, pushing it to
-the limit: WiFi was designed as a protocol for local communication, but
+the limit: Wi-Fi was designed as a protocol for local communication, but
 it was shown that, with the right equipment, it can perform well also on
 long distance links. The experimentation was made easier by the
-unlicensed spectrum of frequencies in which WiFi operates.
+unlicensed spectrum of frequencies in which Wi-Fi operates.
 
-With WiFi gaining popularity and wireless enabled devices becomnig
-mainstream, the cost of WiFi equipment decreased and so did the barrier
+With Wi-Fi gaining popularity and wireless enabled devices becoming
+mainstream, the cost of Wi-Fi equipment decreased and so did the barrier
 to participate in WCNs. At the same time, wireless protocols evolved and
-improved -- for example 802.11a worked in the less crowded 5GHz band,
-allowing more separation between the used frequencies and thus less
-interference. In addition, a key factor to the diffusion on WCNs was the
+improved. For instance, 802.11a operates in the less crowded 5GHz band,
+allowing more separation between the used frequencies and thus, less
+interference.
+
+In addition, a key factor to the diffusion on WCNs was the
 scarce availability of broadband connections in certain areas. In such
-cases, networks were not an experiment anymore, but were used to provide
+cases, networks were not an experiment any more, but were used to provide
 services where commercial initiatives were lacking.
 
-Today, the WCN scenario is varied: in some places they are used to
-mitigate the digital divide, elsewhere they remaind experimental
-testbeds or are more focused on the social/political aspect of being an
+Today, the WCN scenario has changed: in some places they are still used to
+mitigate the digital divide, elsewhere they remind experimental
+test beds or are more focused on the social/political aspect of being an
 autonomous network owned and run by citizens. In the latter, the focus
 is on the services provided inside the network rather than on Internet
-access, even if it may be available. Some WCNs have grown to the point
-of having an Autonomous System (AS) number assigned and being able to
+access, which in some cases is not even available.
+
+Some WCNs have grown to
+the point of having an Autonomous System (AS) number assigned and being able to
 peer with other networks at Internet eXchange Points (IXPs).
 
 WCNs usually have a cultural background of Open Source enthusiasts and
@@ -139,12 +142,12 @@ a sense of community. More experienced participants share their
 technical knowledge (and their time), making it possible for new members
 to enter the network with minimum effort.
 
-Because of their nature of not asking permissions, it is difficult to
+Because of their spontaneous nature, it is difficult to
 determine precisely the number of active WCNs as there is no central
 registry to look at. However, there is a Wikipedia page\footnote{(``List
   of Wireless Community Networks by Region. Wikipedia, the Free
   Encyclopedia'' 2014)} which, albeit incomplete, lists 262 WCNs at the
-time of writing. The dimensions of such networks are varied, from just a
+time of writing. The dimensions of such networks vary from just a
 handful of nodes to nearly 25,000 as in Guifi\footnote{\url{http://guifi.net}},
 which is widely regarded as the world's largest WCN.
 
@@ -159,43 +162,63 @@ which is widely regarded as the world's largest WCN.
 WCNs were born together with the IEEE 802.11 protocol family and
 continue to use it for various reasons, such as hardware availability
 and low cost, unlicensed frequency spectrum operation and the constant
-improvement of subsequent versions. Other solutions for the pyhsical
+improvement of subsequent versions. Other solutions for the physical
 layer are sometimes used -- for example proprietary protocols, maybe
 operating in licensed frequencies, or even methods not based on
 radio\footnote{Ronja, \url{http://ronja.twibright.com/}} -- but they are
-an uncommon last resort when WiFi can not work (due to interference or
+an uncommon last resort when Wi-Fi can not work (due to interference or
 other reasons).
 
 A node of a WCN is a router connected with one or more radio interfaces.
 There is not a standard for the construction of a node, but over time
 every community has gathered some best practices and guidelines based on
 experience and trial-and-error. The equipment used varies from consumer
-WiFi routers (such as the very popular Linksys WRT54GL) with homemade
+Wi-Fi routers (such as the very popular Linksys WRT54GL) with home-made
 antennas, to professional and more expensive equipment dedicated to
-long-range WiFi links. Smaller nodes, especially if they are near enough
-to other ones, may use a single omnidirectional antenna to connect to
-different nodes. Usually, however, directional antennas with a limited
+long-range Wi-Fi links. Smaller nodes, especially if they are close enough,
+may use a single omnidirectional antenna to connect to
+different nodes. Usually, however, directive antennas with a limited
 beam width are used, to reduce interference leveraging different
 channels, avoid receiving noise from all directions and achieve an
-higher gain. Some nodes use both kinds of antennas, directional for
+higher gain. Some nodes use both kinds of antennas, directive for
 backbone links and omnidirectional to provides an hotspot access.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics{./images/directional-antennas.png}
 \caption{The difference between an omnidirectional and multiple
-monodirectional antennas.}
+directive antennas.}
 \end{figure}
 
+\section{Mesh networks}\label{mesh-networks}
+A mesh network is a type of network in which every node relays information
+to other nodes. The advantage of using a mesh, rather than a
+hierarchic structure, is that mesh networks can automatically configure
+and adapt to changes, without the need for manual intervention.
+
+Mesh networks also benefit from having redundant paths and being able to
+adapt in case of failure of some links.
+
+Mesh networks are usually wireless, since wired connections tend to be
+more permanent and reliable, and when cables are laid usually configuring
+the network is the smallest issue.
+
+Wireless mesh networks have a large number of applications.
+They are used in sensor networks, which employ small embedded devices that
+communicate with each other to relay data to an observation point.
+The ``One Laptop Per Child'' project, which developed laptops to give to
+students in third-world countries, equipped them with mesh networking
+capabilities to enable sharing without a network infrastructure.
+
 Routing is one of the biggest challenges in wireless mesh networks. Due
-to the very nature of wireless links, traditional routing protocols
+to the nature of wireless links, traditional routing protocols
 thought for wired networks perform poorly when applied to them. In
 recent years, many new routing protocols have been proposed to address
 this issue and today there is a competition with no clear winner. The
 two most widely known routing protocols for wireless mesh and ad-hoc
-networks are OLSR and BATMAN. The former, which is used in the three
-WCNs analysed in this work, will be the subject of chapter 3. \emph{some
-words on BATMAN?}
+networks are OLSR and B.A.T.M.A.N. The former, which is used in the three
+WCNs analysed in this work, will be the subject of
+\hyperref[olsr-survey]{chapter 3}.
 
 \chapter{Network topology and graphs}\label{network-topology-and-graphs}
 
@@ -203,13 +226,14 @@ Some mathematical instruments are required to do any kind of description
 or analysis of the topology of a network, or to explain the functioning
 of a routing protocol.
 
-The mathematical structure which is used to describe networks is the
-graph. A \emph{simple, undirected graph} is an ordered pair
+One mathematical structure which is used to describe networks is the
+\emph{graph}. A \emph{simple, undirected graph} is an ordered pair
 $G = (V, E)$, where elements of $V$ are the \emph{nodes} (also called
-\emph{vertices}) of the graph and are usually denoted with letters
-$u,v,w,\ldots$, while $E \subseteq \binom{V}{2}$ is the set of the
-\emph{edges} of the graph. For convenience,
-$e_{ij} \coloneqq \{v_i, v_j\} \in E$.
+\emph{vertices}) of the graph, while $E \subseteq \binom{V}{2}$ is the set of the
+\emph{edges} of the graph. As a convention, in the rest of this thesis,
+nodes will be denoted with $v_i$, $i \in \mathbb{N}$, without meaning any
+particular ordering of the nodes. Also, for convenience, an edge
+$\{v_i, v_j \}$ will be denoted $e_{ij}$.
 
 An edge $e_{ij}$ is said to be \emph{incident} to the vertices $v_i$ and
 $v_j$; equivalently, $v_i$ and $v_j$ are incident to $e_{ij}$. Two
@@ -219,11 +243,13 @@ The graph is said simple since there are no loops (i.e.
 $\{u,u\} \not\in E$) and each pair of vertices is connected by at most
 one edge. The above mentioned graph is also said undirected. On the
 other hand, a \emph{directed graph} is a pair $D = (V, A)$ where
-$A = \{(u,v) | u,v \in V,\, u \neq v\}$ -- the elements of $A$ are
+$A = \{(u,v) \st u,v \in V,\, u \neq v\}$. The notation $(a,b)$ means
+an ordered pair, in contrast to edges of an undirected graph
+which are unordered. The elements of $A$ are
 usually called \emph{arcs}.
 
 For the purposes of describing networks, graphs are considered to be
-\emph{finite}, so $N$ and $E$ are finite sets. Many well known finite
+\emph{finite}, so $V$ and $E$ are finite sets. Many well known finite
 graph properties do not hold in the infinite case.
 
 A \emph{weighted graph} is a graph in which every edge has an associated
@@ -235,11 +261,15 @@ $w: e \mapsto 1\, \forall e \in E$.
 To model networks as graphs, each node of the network is represented by
 a node in the graph and a link between two nodes is represented by an
 edge between those nodes. If there are unidirectional link, a directed
-graph is used. For the purposes of this work, every link is considered
-bidirectional and symmetric, so from now on ``graph'' will be use for
-simple, undirected graphs.
+graph is used. In the routing protocol used by the networks analysed here,
+only bidirectional links are used, and the quality of a link is measured
+on the round-trip, so it is symmetrical. Given so, from now on ``graph''
+will be used for simple, undirected graphs.
 
 \section{Terminology}\label{terminology}
+
+This section introduces the terminology that will be used throughout
+the thesis when referring to graph properties.
 
 \subsection{Order and size}\label{order-and-size}
 
@@ -255,8 +285,7 @@ vertex of degree 1 is a \emph{leaf}.
 The \emph{total degree} of a graph is $\sum_{v \in V} k_v$.
 
 The \emph{degree sequence} of a graph is the list of degrees in
-non-increasing order. Not every non-increasing sequence of integers is
-the degree sequence of some graph.
+non-increasing order.
 
 The \emph{degree distribution} of a graph is a function
 $p_k: \mathbb{N} \rightarrow [0, 1]$ such that
@@ -270,18 +299,23 @@ $\sum_{k} p_k = 1$.
 
 \subsection{Subgraphs}\label{subgraphs}
 
+The set $E$ of the edges of graph $G$ can also be seen as a relationship
+between the vertices of the graph. This means that given a subset of the
+vertices, $V' \subseteq V$, the restriction $E\restriction_{V'}$ can be
+defined. As a set, $E\restriction_{V'} \coloneqq
+\{\{v_i, v_j\} \in E \st v_i,v_j \in V'\}$
+
 A \emph{subgraph} $G' = (V', E')$ of $G$ is a graph such that
-$V' \subseteq V$ and $E' \subseteq E\restriction_{V'}$, where
-$E\restriction_{V'} = \{\{v_i, v_j\} \in E \st v_i,v_j \in V'\}$.
+$V' \subseteq V$ and $E' \subseteq E\restriction_{V'}$.
 
 \subsection{Walks, paths}\label{walks-paths}
 
 A \emph{walk} is a sequence of vertices
 $P = (v_0, v_1, \ldots, v_n) \in V \times V \times \ldots \times V$ such
-that $e_ij \in E,\, 0 \leq i < n$. A walk is \emph{closed} if
+that $\{v_i, v_{i+1}\} \in E,\, 0 \leq i < n$. A walk is \emph{closed} if
 $v_0 = v_n$, \emph{open} otherwise. The \emph{length} of the walk is
-$n$. The \emph{weight} of the walk is $w_P = \sum_0^{n-1} w(e_ij)$. In
-unweighted graphs, $w_P = N$.
+$n$. The \emph{weight} of the walk is
+$w_P = \sum_{i=0}^{n-1} w(\{v_i, v_{i+1}\})$. In unweighted graphs, $w_P = n$.
 
 A \emph{path} is a walk with no repeated vertices. A \emph{cycle} is a
 closed walk with no repeated vertices, except obviously the starting one
@@ -291,12 +325,11 @@ Given a graph with no negative-weight cycles, a \emph{geodesic path},
 also called \emph{shortest path}, between $v_0$ and $v_n$ is a walk
 $P = (v_0, v_1, \ldots, v_n)$ such that
 $\nexists P' = (u_0, u_1, \ldots, u_m)$ with
-$u_0 = v_0,\, u_m = v_n \st w_{P'} < w_P$. Note that $P$ is a path: if
-$\exists v_i, v_j \in P \st v_i = v_j$, then
-$\exists P' = (v_0, \ldots, v_i, v_{j+1}, \ldots, v_n) \st w_{P'} < w_P \Rightarrow P$
-is not the geodesic path.\\In a graph with negative-weight cycles, the
+$u_0 = v_0,\, u_m = v_n \st w_{P'} < w_P$.\\
+In a graph with negative-weight cycles, the
 geodesic path is not defined, since it is possible to have walks with
-$w_P = -\infty$.\\The length of a geodesic path (which is the length of
+$w_P = -\infty$.\\
+The length of a geodesic path (which is the length of
 all of them) from $u$ to $v$ is called \emph{geodesic distance} of $u$
 and $v$, indicated with $d_{uv}$
 
@@ -307,7 +340,7 @@ The set of the neighbours of $v$ is called \emph{neighbourhood} of $v$.
 
 The concept of neighbourhood may be extended to vertices at any
 distance. For example, the \emph{2-hop neighbourhood} of $v$ is the set
-of vertices $u$ such that there is a walk from $v$ to $u$ whit lenght 2.
+of vertices $u$ such that there is a walk from $v$ to $u$ with length 2.
 Similarly, the \emph{strict 2-hop neighbourhood} of $v$ is the set of
 vertices which are in the 2-hop neighbourhood, excluding $v$ itself and
 its direct neighbours.
@@ -328,13 +361,13 @@ metric is to determine the most ``important'' components of a network.
 The meaning of ``important'' varies depending on the context: in social
 networks importance is usually defined by the influence of a node,
 measured by the size of it neighbourhood. In communication networks, the
-most important nodes are those who participates most communications,
+most important nodes are those who participates to most communications,
 either by forming circuits or by relaying packets. These are just two
 examples of different notions of importance that require different ways
-to be measures. In the following paragraphs, the centrality metrics
-relevant to this work are presented.
+to be measured. The following paragraphs present the centrality metrics
+relevant to this thesis.
 
-\subsubsection{Degree centrality}\label{degree-centrality}
+\subsubsection{Degree centrality ($C_D$)}\label{degree-centrality}
 
 The degree of a vertex is the simplest possible measure of centrality
 and it is the only one that is only based on local properties. This is
@@ -347,7 +380,7 @@ behaviour of other metrics.
 C_D(v) = k_v
 \end{equation}
 
-\subsubsection{Betweenness centrality}\label{betweenness-centrality}
+\subsubsection{Betweenness centrality ($C_B$)}\label{betweenness-centrality}
 
 Betweenness centrality of vertex $v$ is defined as the fraction of
 shortest paths between any two vertices that pass through $v$. Formally,
@@ -355,13 +388,13 @@ define $\sigma(s,t)$ the number of shortest paths from $s$ to $t$ and
 $\sigma(s,t|v)$ the number of those paths that pass through $v$. If
 $s = t,\, \sigma(s,t) = 1$. There is not a consensus in literature if a
 path ``passes through'' its endpoint; in this case, it is assumed not:
-$\sigma(s,t|s) = \sigma(s,t|t) = 0$. The betweennes centrality is
+$\sigma(s,t|s) = \sigma(s,t|t) = 0$. The betweenness centrality is
 
 \begin{equation}
 C_B(v) = \sum_{s,t \in V} \frac{\sigma(s,t|v)}{\sigma(s,t)} %_
 \end{equation}
 
-Betweennes centrality is especially useful in the study of communication
+betweenness centrality is especially useful in the study of communication
 networks because information usually travels through the shortest path,
 so $C_B$ helps estimating how much traffic a node will see, in a way
 other centrality measures do not consider. For example, in the classic
@@ -371,8 +404,8 @@ complete graphs passes through them they have high betweenness. This
 reflects the big control they have over the communications between other
 nodes.
 
-\subsubsection{Edge betweenness
-centrality}\label{edge-betweenness-centrality}
+\subsubsection{Edge betweenness centrality ($C_E$)}
+\label{edge-betweenness-centrality}
 
 The concept of betweenness centrality can also be easily extended to
 edges, with a similar notation.
@@ -381,19 +414,19 @@ edges, with a similar notation.
 C_{E}(e) = \sum_{s,t \in V} \frac{\sigma(s,t|e)}{\sigma(s,t)}
 \end{equation}
 
-\subsubsection{Closeness centrality}\label{closeness-centrality}
+\subsubsection{Closeness centrality ($C_C$)}\label{closeness-centrality}
 
 Closeness centrality is also based on shortest paths, but has a
 different approach and a different meaning. It is based on the mean
 distance between $v$ and the other vertices. If $d_{vu}$ is the geodesic
-distance between $v$ and $u$, the \emph{mean geodesic distance} from $v$
-to $u$, averaged over all vertices $u$ is
+distance between $v$ and $u$, the \emph{mean geodesic distance} of $v$,
+averaged over all vertices is
 
 \begin{equation}
 \mathcal{L}_v = \frac{1}{n} \sum_u d_{vu}  %_
 \end{equation}
 
-Since usually centrality measures have high values for more central
+Since usually centrality metrics have high values for more central
 nodes, closeness centrality is usually defined as the inverse of the
 mean distance $\mathcal{L}_v$.
 
@@ -402,7 +435,7 @@ C_C(v) = \frac{1}{\mathcal{L}_v} = \frac{n}{\sum_u d_{vu}}  %_
 \end{equation}
 
 Closeness centrality, despite being often used in network studies, has
-come shortcomings. For example, the above definition is only valid if
+shortcomings. For example, the above definition is only valid if
 the graph is connected, since $d_{vu}$ is defined to be infinite if
 there is no path from $v$ to $u$. In graphs with more than one connected
 components, $C_C$ would then be zero for every vertex. The usual
@@ -427,14 +460,14 @@ mathematically or otherwise analyse empirically their structural and
 dynamical properties.
 
 \subsection{Erd\H{o}s-Rényi random
-graph}\label{erds-ruxe9nyi-random-graph}
+graph}\label{erdos-renyi-random-graph}
 
 The random graph model originally proposed by Erd\H{o}s and Rényi is
 also called $G(n,M)$ model, since it consists in the uniform random
 selection of a graph from the set of all graphs with $n$ nodes and $M$
 edges.
 
-The model used here is a variaton first introduced by (Gilbert 1959),
+The model used here is a variation first introduced by (Gilbert 1959),
 called the $G(n,p)$ model. The algorithm starts form a graph with $n$
 nodes and no edges. Then, for each unordered pair of nodes
 $\{i,j\} . i \neq j$, the edge $ij$ is added with probability $p$.
@@ -443,7 +476,8 @@ The $G(n,p)$ models has some interesting properties which are not
 obvious at a first look. For example, the number of edges is not known
 as in the $G(n,M)$ models, but the expected number of edges can be
 determined to be $\binom{n}{2}p$. Another important aspect is
-connectedness: for $p > \frac{(1+\epsilon) \ln n}{n}$ the graph will
+connectedness: with a large enough $n$,
+for $p > \frac{(1+\epsilon) \ln n}{n}$ the graph will
 almost surely be connected, while for $p < \frac{(1-\epsilon) \ln n}{n}$
 it will almost surely have isolated vertices.
 
@@ -468,12 +502,13 @@ and R. Albert in (Barabási and Albert 1999). This is the method
 implemented by NetworkX. Given a target number $n$ of nodes and a
 parameter $m$ which controls the density of the network, the algorithm
 starts from a graph with $m$ nodes and no edges. Then other nodes are
-added and from each new node $m$ edges are created. The new edges are
-attached preferentially to the nodes with higer degree. This continues
-until there are $n$ nodes in the graph, meaning the final graph will
-contain $(n-m) m$ edges.
+added and from each new node $m$ edges are created. The probability of an
+existing node to be chosen as the destination of a new link is proportional
+to its degree -- this is the meaning of preferential attachment.
+The procedure continuesuntil there are $n$ nodes in the graph,
+meaning the final graph will contain $(n-m) m$ edges.
 
-\chapter{OLSR summary}\label{olsr-summary}
+\chapter{Survey of the OLSR protocol}\label{olsr-survey}
 
 Optimized Link State Routing (OLSR) is a proactive routing protocol
 standardized by the IETF in RFC 3626\footnote{Clausen and Jacquet (2003)}
@@ -501,7 +536,7 @@ general.
 \begin{figure}[htbp]
 \centering
 \includegraphics{images/mpr.png}
-\caption{Flooding vs.~MPR forwarding}
+\caption{Flooding vs. MPR forwarding}
 \end{figure}
 
 \section{Generic packet format}\label{generic-packet-format}
@@ -514,10 +549,11 @@ protocol and allows the transmission of different kinds of information
 in a single packet.
 
 Each message is flooded through the network with a TTL. The transmission
-to neighbours is just a special case of flooding. Duplication is
-eliminated locally, since each node maintains a set of messaged it has
-already processed, and minimized globally by the MPR mechanism.
+to neighbours is just a special case of flooding with TTL=1. Duplication is
+eliminated locally, since each node records the originator address and
+sequence number of all the messages it processes.
 
+\begin{figure}
 \begin{verbatim}
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -547,25 +583,23 @@ already processed, and minimized globally by the MPR mechanism.
 :                                                               :
                (etc.)
 \end{verbatim}
+\caption{Fields of a generic OLSR packet}
+\end{figure}
 
 \section{Link sensing and neighbour
 discovery}\label{link-sensing-and-neighbour-discovery}
 
-MPRs are selected locally by each node between its neighbours. The
-requirement is that the MPRs of a node $v$ must cover, with the union of
-their neighbourhoods, the 2-hop neighbourhood of $v$. Thus, in order to
-select its MPRs, a node must know its 2-hop neighbours and how to reach
-them.
-
-The message type used in OLSR for this purpose is the \texttt{HELLO}
-message, which is transmitted by each node to its neighbours and
-contains the addresses of the neighbour it knows. Of course, the first
+Link sensing and neighbour discovery are achieved in OLSR with the
+use of \texttt{HELLO}
+messages, which are transmitted by each node to its neighbours and
+contain the addresses of the neighbours it knows. Of course, the first
 \texttt{HELLO} messages are empty and only serve the purpose of link
 sensing. After each node populates its neighbour set, it includes this
 information in its \texttt{HELLO} messages, along with some information
-on the links and the neighbours (e.g.~if the links are verified to be
+on the links and the neighbours (e.g. if the links are verified to be
 symmetric). This allows all nodes to gather the necessary knowledge of
-their 2-hop neighbourhood.
+their 2-hop neighbourhood. Only bidirectional links are considered by
+OLSR as valid.
 
 \texttt{HELLO} messages are generated and transmitted at a regular
 interval (\texttt{HELLO\_INTERVAL}). Lost links are also advertised for
@@ -576,51 +610,57 @@ signalling}\label{mpr-selection-and-signalling}
 
 Using the information from the \texttt{HELLO} messages, each node can
 select a set of its neighbours such that every node in its 2-hop
-neighbourhood is at 1 hop from the set. Formally, call $N_1(u)$ the
-neighbourhood, $N_2(u)$ the strict 2-hop neighbourhood, select
-$\mpr(u) \subseteq N_1(u)$ such that
+neighbourhood is at 1 hop from the set. Formally, call $N_1(v)$ the
+neighbourhood, $N_2(v)$ the strict 2-hop neighbourhood, select
+$\mpr(v) \subseteq N_1(v)$ such that
 
 \begin{equation*}
 %*
-\forall v \in N_2(u) \. \exists s \in \mpr(u) \text{ st. } v \in N_1(s)
+\forall u \in N_2(v) \, \exists s \in \mpr(v) \text{ st. } u \in N_1(s)
 \end{equation*}
 
 This requirement essentially means that each node in the strict 2-hop
-neighbourhood can be reached through a MPR. The protocol specification
-suggests that the MPR set of each node should be as small as possible,
-but does not require it. Once a node has selected its MPRs, it needs to
-signal its choice to the neighbours, so that the selected nodes know
-that they must retransmit its broadcasts (and the other nodes know not
-to do that). \texttt{HELLO} messages are used also for this purpose: the
-selected MPRs are advertised with a neighbour type of
-\texttt{MPR\_NEIGH}.
+neighbourhood can be reached through a MPR. Once a node has selected its
+MPRs, it needs to signal its choice to the neighbours.
+\texttt{HELLO} messages are used also for this purpose:
+the selected MPRs are advertised with a neighbour type of \texttt{MPR\_NEIGH}.
+
+As a notational convention, $v \to u \Leftrightarrow u \in \mpr(v)$.
 
 \section{Message forwarding}\label{message-forwarding}
 
-Observing the \texttt{HELLO} messages it receives, each node populates
-and maintains an \texttt{MPR Selector Set}. This is the set of nodes
-that selected it as an MPR or, in other words, the set of nodes whose
-transmissions are to be forwarded by the node in question.
+Observing the \texttt{HELLO} messages it receives, node $v$ populates
+and maintains an \texttt{MPR Selector Set}. This is the set
 
-When a node receives a message (except for \texttt{HELLO} messages,
+\begin{equation*}
+  \mss(v) \coloneqq \{ u \in V \st u \to v \}
+\end{equation*}
+
+Node $v$ then need to retransmit only the messages it receives by nodes
+in $\mss(v)$.
+
+When $v$ receives a message (except for \texttt{HELLO} messages,
 which are never forwarded), it checks if the time-to-live has reached
 zero or if the message was already processed (by examining the duplicate
 set). If the message passes this preliminary checks, it is forwarded
 only if it was received from a selector.
 
-This strategy obviously reduces the number of times a single message is
-forwarded. Thanks to the construction of the MPR set, the strategy also
-ensures that each message can reach every node in the network.
+The primary goal of using MPRs is reducing the number of duplicate message
+retransmissions while ensuring that each node receives the required
+information. The selection of MPR nodes influences the capacity of reaching
+this goal. The OLSR specification suggests that the size of the MPR set
+should be minimized. However, it leaves freedom to the implementer or
+the network administrator to override the default heuristic in order to
+achieve, for instance, more redundancy.
 
 \section{Topology control}\label{topology-control}
 
 The link-state information is propagated throughout the network with
 \texttt{Topology Control} messages (\texttt{TC}). This messages are
-generated only by the nodes which have been selected as MPR for some
-other node and propagated following the above described rules. Each
-\texttt{TC} message contains the identification of the node who
-generated the message and a list of the addresses of some of its
-neighbours.
+generated only by the MPRs and propagated following the above described
+rules. Each \texttt{TC} message contains the identification of the node who
+generated the message and a list of the addresses of its
+neighbours, but not all neighbours are necessarily included.
 
 The OLSR specification requires that the nodes in the
 \texttt{MPR Selector Set} of a node be in the \texttt{TC} messages it
@@ -629,16 +669,22 @@ neighbours selected by it as MPRs, or even all of its neighbours. The
 added redundancy comes at the cost of longer \texttt{TC} messages, which
 may be more susceptible to congestion.
 
+The links between an MPR and the neighbours that it does not advertise
+in \texttt{TC} messages effectively disappear from the topology which is
+known to other nodes. Thus, nodes in OLSR have only a partial knowledge
+of the network and can calculate routes with this incomplete
+information.
+
 \section{Link quality}\label{link-quality}
 
-OLSR implements a mechanism to avoid using ``bad'' links (i.e.~links
-which are usually too weak but may let \texttt{HELLO} messages pass from
-time to time). Since \texttt{HELLO} messages are transmitted at a
-regular interval, each node knows how many of them to expect from each
-neighbour over a period of time. Comparing this with the number of
-received messages it computes a measure of the Link Quality (LQ). This
-metric was originally only used to decide if a link was reliable enough
-to use. New versions of OLSR have put more importance on link quality.
+OLSR implements a mechanism to avoid using ``bad'' links (links which
+are usually too weak but may let \texttt{HELLO} messages pass from time
+to time). Since \texttt{HELLO} messages are transmitted at a regular
+interval, each node knows how many of them to expect from each neighbour
+over a period of time. Comparing this with the number of received
+messages it computes a measure of the Link Quality (LQ). This metric was
+originally only used to decide if a link was reliable enough to use. New
+versions of OLSR have put more importance on link quality.
 
 It is common in WCNs to use the ETX metric to express link quality. ETX
 stands for Expected Transmission Count and was proposed in De Couto
@@ -647,7 +693,7 @@ retransmissions) required to successfully deliver a packet.
 
 In OLSR, ETX is derived directly from LQ. \texttt{HELLO} messages
 contain the calculated values, so each node has for every link two
-measures: its own (LQ) and its neighbour's (NLQ). Since each packet
+measures: its own (LQ) and its neighbour's (NLQ). Since each unicast packet
 transmission requires an acknowledgement, the estimated probability of
 success is $\linkq \cdot \nlq$. ETX is calculated as
 
@@ -655,16 +701,71 @@ success is $\linkq \cdot \nlq$. ETX is calculated as
 \etx = \frac{1}{\linkq \cdot \nlq}
 \end{equation}
 
-\chapter{The analysed networks}\label{the-analysed-networks}
+The measure of ETX in OLSR is surely an approximation because it does not
+describe the behaviour of real data packets. Only relatively small broadcast
+packets are taken into account and this may introduce a bias since bigger
+packets have more probability to be involved in collisions.
+In addition, no regard is given to the possibility of getting a link quality
+measure from the radio layer.
 
-The three WCNs which are analysed later are Ninux, Funkeuer Wien and
-Funkfeuer Graz. The study considers 50 snapshots of the networks taken
-from \ldots{} to \ldots{} .
+\section{Use of LQ in MPR selection}\label{use-of-lq-in-mpr-selection}
+
+The heuristic proposed in the RFC to compute the MPR set of a node gives
+no importance to link quality. This means that a node could choose as an
+MPR a neighbour with a weak connection. Since MPRs advertise the route
+to their selectors, this weak link may end up being used in place of a
+better one, because the latter is not shared with an MPR.
+
+To address this issue, it has been proposed to use an algorithm for
+selecting MPRs that accounts for link quality. Unfortunately, the
+rapidly changing nature of link quality causes instability in the MPR
+set. This in turn causes MPRs to generate \texttt{TC} messages more
+often, leading to an increase in signalling, the exact opposite of the
+reason why MPR were introduced in the first place.
+
+To avoid this effect, but still ensure that good links are not discarded
+for weak ones, the implementation of OLSR used by the analysed WCNs
+forces each node to be an MPR. Every node has thereby the complete
+knowledge of the network topology.
+
+\chapter{The networks}\label{the-networks}
+
+The three WCNs which are analysed in the theses are Ninux (in Italy),
+FunkFeuer Wien and FunkFeuer Graz (in Austria). The study considers 50
+snapshots of the networks taken in January 2014.
+
+\begin{longtable}[c]{@{}rccc@{}}
+\toprule\addlinespace
+& Ninux & FFWien & FFGraz
+\\\addlinespace
+\midrule\endhead
+date & 20/01/14 & 13/01/14 & 13/01/14
+\\\addlinespace
+snapshot interval & 5 min & 5 min & 10 min
+\\\addlinespace
+timespan & 4h 10min & 4h 10min & 8h 20min
+\\\addlinespace
+\bottomrule
+\end{longtable}
+
+The snapshots were obtained by the interpolation of the OLSR topology
+exported directly by the routing daemons on the nodes (since each node
+has the complete knowledge of the topology) and information published
+(or otherwise provided) by the communities.
+
+Some supernodes with several antennas make each of them run OLSR as an
+independent node, connecting them to a switch. These cases have been
+considered a single node for the purpose of this analysis, since they
+represent devices in a single location, run by a single person and
+connected to a single power source. Moreover, this type of configuration
+is being replaced by a more efficient one, which uses a single router
+running OLSR. The separate devices are then configured as simple 802.11
+Access Points/clients and connected to the router using separate VLANs.
 
 \section{Ninux}\label{ninux}
 
 \includegraphics{images/ninux_logo.png} Ninux\footnote{\url{http://wiki.ninux.org/}}
-is the largest italian WCN. It was started in 2001 in Rome and now
+is the largest Italian WCN. It was started in 2001 in Rome and now
 consists of about 250 active nodes, located in different ``Ninux
 islands'' all over Italy. The name ``Ninux'' originally was a tribute to
 the project founder, Nino, but now the project members usually take it
@@ -702,8 +803,8 @@ Ninux is an Autonomous System (AS\# 197835)\footnote{\url{https://apps.db.ripe.n
 and it is a member of the NaMeX\footnote{\url{http://www.namex.it/en/who/members}}
 Internet Exchange Point.
 
-In this work, the biggest Ninux island has been analyzed (since it is
-the biggest OLSR routing domain), which is Rome's newtork. It consists
+In this work, the biggest Ninux island has been analysed (since it is
+the biggest OLSR routing domain), which is Rome's network. It consists
 of 132 nodes connected by 154 links (average degree of 2.333).
 
 \begin{figure}[htbp]
@@ -715,12 +816,12 @@ of 132 nodes connected by 154 links (average degree of 2.333).
 \section{FunkFeuer: Wien}\label{funkfeuer-wien}
 
 FunkFeuer\footnote{\url{http://www.funkfeuer.at/}} is a project that
-comprises networks in different parts of Austria (Vienna, Graz, parts of
+comprises networks in different places of Austria (Vienna, Graz, parts of
 Weinviertel and Bad Ischl). The literal meaning of ``funkfeuer'' in
-german is ``radio beacon''. FunkFeuer is also a registered association
+German is ``radio beacon''. FunkFeuer is also a registered association
 in Austria, differently from Ninux.
 
-The origins of FunkFeuer are in the experiments of an austrian ISP based
+The origins of FunkFeuer are in the experiments of an Austrian ISP based
 in Vienna, Silver Server, which, during the 1990s, explored the
 commercial viability of wireless radio data links. After a test phase,
 Silver Server ultimately decided that the technology was not ready to be
@@ -732,7 +833,7 @@ create easy end-user access.
 
 The network was ultimately decentralised, giving the opportunity to the
 citizens to buy the hardware of the nodes. The advent of cheap GNU/Linux
-based embedded WiFi products promoted the growth of the network and an
+based embedded Wi-Fi products promoted the growth of the network and an
 association was founded to have a more structured organisation and
 address the issues of decentralisation. The existence of a formal
 association also enables to request sponsoring from local
@@ -750,66 +851,59 @@ FunkFeuer Graz (FFGraz)\footnote{\url{http://graz.funkfeuer.at/}} is the
 city. It was founded after FFWien by Othmar Gsenger, Erwin Nindl and
 Roland Jankowski and has its own association to apply for local
 sponsoring. It consists of 144 nodes and 199 edges, with an average
-degree of 2.764. \includegraphics{images/graz_map.png}
+degree of 2.764. 
 
-\begin{longtable}[c]{@{}crrr@{}}
+\begin{figure}[htpb]
+  \centering
+  \includegraphics{images/graz_map.png}
+  \caption{Map of the FunkFeuer Graz network}
+\end{figure}
+
+\section{Comparison}\label{comparison}
+
+\begin{longtable}[c]{@{}lccc@{}}
 \toprule\addlinespace
-Degree & Ninux & FFWien & FFGraz
+& Ninux & FFWien & FFGraz
 \\\addlinespace
 \midrule\endhead
-1 & 69.02 & 77.96 & 64.72
+Nodes & 132 & 237 & 144
 \\\addlinespace
-2 & 22.64 & 27.46 & 27.28
+Links & 154 & 433 & 199
 \\\addlinespace
-3 & 16.34 & 36.38 & 18.80
+Average degree & 2.333 & 3.654 & 2.764
 \\\addlinespace
-4 & 9.66 & 36.24 & 11.72
+Density & 0.018 & 0.015 & 0.019
 \\\addlinespace
-5 & 4.36 & 18.34 & 2.04
-\\\addlinespace
-6 & 1.98 & 11.40 & 7.32
-\\\addlinespace
-7 & 1.00 & 8.50 & 2.80
-\\\addlinespace
-8 & 4.00 & 3.62 & 2.24
-\\\addlinespace
-9 & 2.00 & 4.62 & 1.84
-\\\addlinespace
-10 & 1.00 & 4.44 & 2.04
-\\\addlinespace
-11 & 0.00 & 1.98 & 1.24
-\\\addlinespace
-12 & 0.00 & 2.94 & 1.40
-\\\addlinespace
-13 & 0.00 & 0.46 & 0.28
-\\\addlinespace
-14 & 0.00 & 0.48 & 0.08
-\\\addlinespace
-15 & 0.00 & 1.18 & 0.28
-\\\addlinespace
-16 & 0.00 & 0.32 & 1.60
-\\\addlinespace
-17 & 0.00 & 0.50 & 0.00
-\\\addlinespace
-18 & 0.00 & 0.02 & 0.00
-\\\addlinespace
-19 & 0.00 & 1.30 & 0.00
-\\\addlinespace
-20 & 0.00 & 0.62 & 0.00
-\\\addlinespace
-21 & 0.00 & 0.06 & 0.00
+Leaf nodes & 69.02 (52\%) & 77.96 (33\%) & 64.72 (0,45\%)
 \\\addlinespace
 \bottomrule
 \addlinespace
-\caption{Average degree frequencies in the three WCNs, over 50 samples}
+\caption{High level features of the three WCNs}
 \end{longtable}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{synthetic_topologies/results/20140626-1629/degree_distribution.png}
+\includegraphics{graphs/degree_distribution.pdf}
 \caption{Degree distributions of the three WCNs, compared with the
-Erd\H{o}s-Rényi and Barabási-Albert models}
+Erd\H{o}s-Rényi (e-r) and Barabási-Albert (b-a) models}
 \end{figure}
+
+As Figure \emph{??} shows, the degree distributions of the three WCNs
+roughly follow a power law $k^{-2}$, as does the random Barabási-Albert
+model. One objective of this analysis is to understand if the model can
+be used to predict other properties of the real networks.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{graphs/weight_rank.pdf}
+\caption{Links of the three WCNs, ranked by probability to lose packets}
+\end{figure}
+
+As can be seen in figure \emph{??}, the three networks have a quite
+different distribution of link quality (the metric shown in the graph is
+$1 - \frac{1}{\etx}$, which is also used for the signalling analysis in
+chapter 5\emph{??}). FunkFeuer Graz has by far the highest average
+weight, while Ninux seems to have the best links.
 
 \chapter{Robustness analysis}\label{robustness-analysis}
 
@@ -825,7 +919,7 @@ remaining graph. More specifically, by examining the connected
 components of the graph, it can be decided if the underlying system is
 still functioning the same after removing nodes (or edges). The removal
 of nodes simulates a variety of real-world situations -- from hardware
-failures in communication networks to vaccined people in the the spread
+failures in communication networks to vaccinated people in the spread
 of a disease. Removing edges addresses other cases, also interesting in
 real-world systems. In the following paragraphs, only site percolation
 is considered, but the remarks are also valid, with the necessary
@@ -840,16 +934,16 @@ but also affects potentially other nodes, which received information
 through the removed node.
 
 If enough nodes are removed, the network will become disconnected, but
-usually there will be a large connected component containg most of the
+usually there will be a large connected component containing most of the
 surviving nodes and some smaller ones with just a few nodes. It can be
 affirmed that in such a situation, at least part of the network is still
 working as intended. Removing even more nodes, however, leads to a point
-where the largest component does not contain a significat fraction of
+where the largest component does not contain a significant fraction of
 the nodes -- it becomes indistinguishable from the smaller ones. This is
 the point in which the network loses all its function.
 
 To formally define a robustness metric, name the connected components of
-a graph, ordered non-increasingly by the numer of their nodes,
+a graph, ordered non-increasingly by the number of their nodes,
 $C_0, \ldots, C_m$. $|C_0|$ is then the order (number of nodes) of the
 largest connected component. The robustness metric is defined as
 
@@ -860,7 +954,7 @@ S = \frac{|C_0|}{|V|}
 \section{Removal order}\label{removal-order}
 
 Nodes and links in a network are not all equal. As seen in
-\hyperref[networkux5ftopologyux5fandux5fgraphs]{Chapter 3}, different
+\hyperref[network-topology-and-graphs]{Chapter 3}, different
 centrality metrics give different measures of the importance of a node
 in a network. When considering robustness, it is interesting to study
 which nodes have the biggest impact when removed and how much difference
@@ -891,8 +985,7 @@ This analysis covers random removal of both nodes and links, removal of
 links by betweenness centrality and of nodes by degree, betweenness and
 closeness centrality.
 
-\section{Comparing different
-networks}\label{comparing-different-networks}
+\section{Comparing different networks}\label{comparing-different-networks}
 
 The objective of doing a robustness analysis on WCNs, apart from
 determining their resilience to failure, is also understanding if the
@@ -911,7 +1004,7 @@ To express the density of a graph, the average degree may be used.
 Recall the three WCNs which are the subject of this analysis have
 average degrees 2.333, 3.654 and 2.764. Since they are to be compared to
 graphs generated by random models, care must be taken to generate graphs
-with an averare degree not too distant from those.
+with an average degree not too distant from those.
 
 The average degree of random graphs can be predicted easily, given the
 parameters:
@@ -951,8 +1044,8 @@ model}
 
 \section{Methodology}\label{methodology}
 
-The analysis was performed on 50 recent snapshots of the topology of the
-three WCNs, as well as 30 graphs for each of the random models.
+The analysis was performed on 50 snapshots of the topology of the three
+WCNs, as well as 30 graphs for each of the random models.
 
 The algorithm simply removed nodes (or links) one by one and checked the
 size of the largest connected component. In the case of random removal,
@@ -964,9 +1057,9 @@ Other values have been tried, but this was determined to be sufficient
 to observe the expected behaviour. Highest values just increased the
 simulation time without adding useful information.
 
-The results were averaged over the graphs of the same kind and
-normalized over the fraction of removed nodes, rather then the number of
-nodes, in order to compare them in the same graph.
+The results were averaged over the graphs of the same kind and expressed
+in term of fraction of removed nodes, rather than number of nodes, in
+order to compare them in the same graph.
 
 \section{Results}\label{results}
 
@@ -992,14 +1085,14 @@ As shown in the figures, there is a marked difference between the
 behaviour of the three WCNs (which is similar) and the behaviour of the
 random graphs. The WCNs are more fragile in all tests, but while the
 difference in the random removal case may be explained by the lower
-density, in all of the ordered removal cases the consistently fail after
-just the 10\% of removed nodes.
+density, in all of the ordered removal cases they consistently fail
+after just 10\% of nodes are removed.
 
 The scale-free random networks is, as expected, less robust than the
 Erd\H{o}s-Rényi model in targeted attack to nodes with the highest
-degree, and shows the same proceeding with removal by betweenness. On
-the other hand, removing nodes by closeness centrality does not really
-show a big difference between the two models.
+degree, and has the same proceeding with removal by betweenness. On the
+other hand, removing nodes by closeness centrality does not really show
+a big difference between the two models.
 
 WCNs, on the contrary, behave the same in all the scenarios in which
 nodes are removed in order, independently from the metric used. This
@@ -1018,10 +1111,36 @@ there are some long links that provide connection between those
 clusters. These long links are apparently (and intuitively) the ones
 with the highest centrality, so the first to be removed.
 
+The inadequacy of the preferential attachment model to predict the
+robustness of WCNs deserves some considerations. Despite the degree
+distributions following in both cases a power law, the robustness
+metrics behave quite differently, so it is worth considering what are
+the features of real world networks the model does not account for.
+
+Firstly, one thing that can be noticed is that the preferential
+attachment model builds a graph with no leaves. With $m = 2$, which is
+the parameter used in this analysis, the graph at step zero is two
+vertices without links, at step 1 it is a path of length 2, at step 2 it
+is either a square or a triangle with a leaf.
+In either case, since each new node is added with 2 links, the final
+graph will contain at most 1 leaf, in contrast with WCNs where leaves
+are a large part of the nodes.
+
+A second observation is that the nodes with highest degree in WCNs
+are usually those installed in good locations (for instance on a hill
+or another elevated spot). This is because Wi-Fi links require a line
+of sight.
+When a new node is added it usually starts as a leaf and does not choose
+its neighbour(s) based on their degree, instead it is forced to choose
+a node it can see.
+So, the growth of a WCN does not follow the preferential attachment rule,
+even if the resulting degree distribution seems similar.
+
 \chapter{Message propagation
 analysis}\label{message-propagation-analysis}
 
-\subsection{The importance of routing}\label{the-importance-of-routing}
+\section{The importance of
+signalling}\label{the-importance-of-signalling}
 
 The robustness of a network is based on a static analysis of the
 connectivity of the network graph when removing nodes or links. A
@@ -1032,175 +1151,127 @@ necessarily the topology used to transmit information, depending on the
 routing protocol used for the network.
 
 Given this, in order to understand the behaviour of a communication
-network we need to study the behaviour of its routing protocol with
-different underlying topologies. We are interested in the phase of
-topology discovery, where each node receives information on the
-existence of the other nodes in the network and (part of) the route to
-reach them.
+network it is necessary to study the behaviour of its routing protocol
+with different underlying topologies. The phase analysed here is that of
+topology discovery, where link-state advertisements are exchanged and
+each node receives information on the existence of the other nodes in
+the network and a route to reach them.
 
-Topology discovery in link state routing protocols is usually performed
-with each node flooding the network with some kind of link-state
-advertisement message. The possible variations are the flooding policy
-and the contents of the message. The most popular routing protocols used
-in mesh networks behave as follows:
+In traditional link-state routing protocols, link-state advertisement
+messages are usually flooded through the network with a simple duplicate
+detection mechanism to avoid broadcast storms.
 
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  B.A.T.M.A.N. uses the simplest possible flooding (each node just
-  performs a duplicate detection to avoid loops) and the advertisement
-  message contains the sender address and a sequence number (for the
-  duplicate detection)
-\item
-  OLSR employs a more sophisticated flooding mechanism based on MPRs and
-  the advertisement message contains the whole neighbourhood of the
-  sender
-\item
-  versions of OLSR used in practice usually force each node to be an
-  MPR,\footnote{Maccari (2013)} thus having an hybrid behaviour with
-  flooding as in B.A.T.M.A.N.
-\end{itemize}
+OLSR uses a more sophisticated technique to reduce the overhead of
+routing. This of course comes at a cost in redundancy, since if a link
+loses \texttt{TC} messages, these are not received through other routes.
+OLSR also has \texttt{HELLO} messages, which are only exchanged with
+neighbours and allow \texttt{TC} messages, which are only generated by
+MPRs, to contain information about all the neighbours of the node which
+generates them.
 
-\subsection{Problem definition}\label{problem-definition}
+The implementation of OLSR used in WCNs differs from the specification
+and forgoes optimization by forcing each node to be an MPR.
 
-The network is represented by a weighted graph $G=(V,E)$, where weights
-represent the probability of losing a packet on each link (we use the
-ETX metric of OLSR for this purpose).
-
-Each node creates a message with information on its neighbourhood and
-propagates it to each neighbour. Each node also propagates the message
-it receives, with a simple duplicate detection based on the sender to
-avoid loops.
-
-Further iterations of the analysis will consider a subset of nodes
-generating and propagating the messages and a different protocol for
-loop avoidance.
-
-Given the above situation, we define
-
-\begin{quote}
-$T_u = \forall v \in N .$ ``node $v$ has a route to node $u$''
-\end{quote}
-
-\begin{quote}
-$R_u = \forall v \in N .$ ``node $u$ has a route to node $v$''
-\end{quote}
-
-Determine the probability of $T_u$ and $R_u$ for each node $u$ in the
-graph.
-
-\subsection{Methodology}\label{methodology-1}
-
-The propagation of a message with duplicate detection can be simulated
-with a Breadth First Search (BFS) over the graph. The most important
-variation is that before traversing an edge a random number is generated
-and compared to the packet loss probability of that link, to check if
-the transmission succeeds. During the BFS, the simulation keeps track of
-which nodes received the message and based on the content of the message
-determines the couples of nodes which have a known route between
-themselves. The search is repeated for every node as the starting point.
-The union of the results is then used to verify $T_u$ and $R_u$.
-
-The random simulation is run 1000 times to gather a significant figure
-of the probability of $T_u$ and $R_u$.
-
-The propagation for a node is as follows in pseudocode:
-
-\paragraph{function propagate(Graph g, Node
-u)}\label{function-propagategraph-g-node-u}
-
-\begin{verbatim}
-message_sender <- u
-message_content <- neighbourhood_of(u)
-q <- Queue()
-route_knowledge <- set()
-u.visited <- True
-for v in u.neighbours append (u,v) to q
-while q is not empty do
-    pop (u,v) from q
-    n <- random()
-    if (not v.visited) and (n ≥ weight(u,v))
-        v.visited <- True
-        for i in message_content
-            add (i,v) to route_knowledge
-        for w in v.neighbours append (v,w) to q if w ≠ u
-return route_knowledge
-\end{verbatim}
-
-The function is run for each node in the graph an the results are
-collected.
-
-\paragraph{function propagate\_all(Graph
-g)}\label{function-propagateux5fallgraph-g}
-
-\begin{verbatim}
-rk <- set()
-t, r <- array()
-for u in g
-    rk <- rk ∪ propagate(g, u)
-for u in g
-    if (u,v) ∈ rk ∀ node v ≠ u
-        t[u] <- 1
-    else
-        t[u] <- 0
-    if (v,u) ∈ rk ∀ node v ≠ u
-        r[u] <- 1
-    else
-        r[u] <- 0
-return t, r
-\end{verbatim}
-
-\paragraph{function run\_simulation(Graph g, Integer
-n)}\label{function-runux5fsimulationgraph-g-integer-n}
-
-\begin{verbatim}
-pt, pr <- array()
-for n times
-    t, r <- propagate_all(g)
-    pt += t                                % sum each element
-    pr += r                                % "
-divide each element of pt by n
-divide each element of pr by n
-return pt, pr
-\end{verbatim}
-
-\subsection{Rationale}\label{rationale}
-
-The feasibility of calculating $T_u$ and $R_u$ exactly has been
-evaluated. However, the computational complexity of this approach seems
-very high and likely does not justify its use in place of the Monte
-Carlo simulation.
-
-Going into the details, the probability of a message propagating from
-node $u$ to node $v$ is easily calculated by\ldots{} \sout{summing the
-probabilities of success for every simple path between the two nodes.}
-With this result for every possible destination $v1\ldots vn$ of a
-message transmitted by $u$, it's theoretically possible to calculate
-$T_u$ but it's not easy: the events ``reaching v1''\ldots{}``reaching
-vn'' are not independent, so the probability of ``reaching every node''
-is not the product of their probabilities.
-
-For example, if $w$ is in any simple path from $u$ to $v$, the
-probability of success between $u$ and $v$ changes if it is known that
-node $w$ has been reached.
-
-$P(v) = P(w) \cdot P(v|w) + P(\lnot w) \cdot P(v|\lnot w)$
-
-The value of $P(v|w)$ and $P(v|\lnot w)$ is not so obvious:
+All of this three variants of signalling have been simulated on the
+topologies of the analysed networks, thus having:
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
 \item
-  $P(v|w)$ is the sum of the probabilities of the subpaths
-  $w \rightarrow v$ for every simple path $u→v$
+  simple flooding of messages with information on the sender node only
+  (L-S)
 \item
-  $P(v|\lnot w)$ is the sum of the probabilities of success for simple
-  paths from $u$ to $v$ excluding the paths that contain $w$
+  simple flooding of messages with information on the sender and its
+  neighbours (WCN)
+\item
+  optimized flooding (with MPRs) of messages with information on the
+  sender MPR node and its neighbours (OLSR)
 \end{itemize}
 
-This must be computed for every $w$ that appears in at least one simple
-path $u \rightarrow v$. Again, this computation must be repeated for
-every possible source-destination pair $u,v$.
+\section{Simulation algorithm}\label{simulation-algorithm}
+
+The signalling on an unreliable network (a network which may lose
+packets) is simulated with an algorithm similar to a Breadth-First
+Search (BFS) on a graph, with an important variation: while the BFS
+always proceeds with the neighbours of a node, signals may fail
+propagating on some links.
+
+The network is represented by a weighted graph $G=(V, E)$, where link
+weights correspond to the probability of losing a packet on that link
+($1 - \frac{1}{\etx}$). Instead of adding all the neighbours to the
+queue of the BFS, a random number is generated (between 0 and 1) for
+each of them and compared to the weight of the respective link. If the
+generated number is bigger, the signal propagates successfully and the
+neighbour is added to the queue, otherwise the transmission fails.
+
+A set of visited nodes is maintained and used to avoid duplicates.
+Before forwarding, conditions on MPRs are also checked, in the OLSR
+scenario.
+
+Since this is a probabilistic simulation, the algorithm was run 1000
+times and the results were averaged.
+
+For each run, the results are saved in a binary matrix $R(x)$ of size
+$|V| \times |V|$. The matrix initially contains all 0s. When a node
+$v_j$ receives a message with information on a set $V'$ of nodes,
+elements $R(x)_{ij}$ are set to 1 $\forall v_i \in V'$.
+
+One message is generated for each node (only for MPRs in the OLSR
+scenario) and propagated as far as possible. After every message has
+stopped propagating, two metrics are measured.
+
+\begin{equation}
+T_i(x) = \sum_{j=1}^{|V|} R(x)_{ij},\, x \in [1..1000]
+\end{equation}
+
+\begin{equation}
+T_i'(x) = \sum_{j=1}^{|V|} R(x)_{ji},\, x \in [1..1000]
+\end{equation}
+
+The averages over all runs of these metrics estimate respectively the
+expected number of nodes that receive information about $v_i$ and the
+expected number of nodes that $v_i$ receives information about. These
+are then normalised with respect to $|V|$, obtaining
+
+\begin{equation}
+t_i = \frac{1}{|V|}
+      \left( \frac{1}{1000} \sum_{x=1}^{1000} T_i(x) \right)
+\end{equation}
+
+\begin{equation}
+t_i' = \frac{1}{|V|}
+       \left( \frac{1}{1000} \sum_{x=1}^{1000} T_i'(x) \right)
+\end{equation}
+
+These quantities were chosen in order to understand the efficiency of
+different signalling methods in networks, considering the real
+efficiency of their links.
+
+\section{Results}\label{signalling-results}
+
+As expected, FunkFeuer Graz is the network that shows the poorest performance,
+due to the bad quality of its links and its peculiar topology. Ninux and
+FunkFeuer Wien have similar results, with the former responding a bit better.
+
+Figure % \figref{fig:sig-ls}
+shows that nodes have a big difficulty reaching the entire network with their
+messages, with no one, even in the best case, exceeding 0.9.
+In contrast, figure % \figref{fig:sig-wcn}
+suggests the importance of transmitting information about neighbours.
+
+By adding content to the messages, signalling becomes more effective and
+less traffic is needed to propagate the required information.
+Moreover, in OLSR the discovery of neighbours through \texttt{HELLO}
+messages can happen at an higher ratio than the propagation of \texttt{TC}
+messages, since they are not flooded.
+This introduces a sort of hierarchy: local topology is refreshed more often
+in order to propagate more information rich messages to the rest of the network.
+
+The addition of MPR forwarding logic is predictably worse than the WCN scenario,
+since redundancy is removed both by the non-use of some links and by some nodes
+not generating messages.
+Nonetheless, this mode of propagation works substantially better than the L-S
+case, for the same reasons described above.
 
 \chapter{Conclusions}\label{conclusions}
 
@@ -1227,12 +1298,6 @@ doi:\href{http://dx.doi.org/10.1214/aoms/1177706098}{10.1214/aoms/1177706098}.
 ``List of Wireless Community Networks by Region. Wikipedia, the Free
 Encyclopedia.'' 2014. June 10.
 \url{https://en.wikipedia.org/w/index.php?title=List_of_wireless_community_networks_by_region\&oldid=612342893}.
-
-Maccari, Leonardo. 2013. ``An Analysis of the Ninux Wireless Community
-Network.'' In \emph{Wireless and Mobile Computing, Networking and
-Communications (WiMob), 2013 IEEE 9th International Conference on},
-1--7. IEEE.
-\url{http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6673332}.
 
 Newman, Mark. 2010. \emph{Networks: An Introduction}. Oxford University
 Press, USA.
