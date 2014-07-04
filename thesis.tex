@@ -1350,11 +1350,11 @@ in order to propagate more information rich messages to the rest of the network.
 A hierarchic approach is precisely what the Open Source implementation of OLSR
 uses to ensure that topology information is up to date without suffocating
 the network with overhead. The implementers decided to take advantage of the
-TTL field in OLSR message and send `TC` messages with TTL values different from
-the default of 255 (the maximum). By sending `TC` messages with small (1, 2, 3)
-TTL values often, the local topology is frequently updated without imposing
-much overhead of the network.
-% TODO cite http://www.open-mesh.org/projects/open-mesh/wiki/The-olsr-story
+TTL field in OLSR message and send \texttt{TC} messages with TTL values
+different from the default of 255 (the maximum). By sending \texttt{TC}
+messages with small (1, 2, 3) TTL values often, the local topology is
+updated more frequently without imposing much overhead of the network.
+\footnote{\url{http://www.open-mesh.org/projects/open-mesh/wiki/The-olsr-story}}
 
 The addition of MPR forwarding logic is predictably worse than the WCN scenario,
 since redundancy is removed both by the non-use of some links and by some nodes
@@ -1380,13 +1380,89 @@ to run some important WCNs with successful results.
 
 \chapter{Conclusions}\label{conclusions}
 
+The first analysis reported in this thesis is the robustness metric.
+Different possible real-world scenarios have been simulated, by the usage
+of different policies in the removal of nodes and links from the networks.
+Random removal was used to simulate independent failures of nodes or links,
+while removal of nodes and links with the highest centrality metrics was a
+possible interpretation of an attack scenario in which the most important
+nodes are maliciously targeted.
 
+The analysis has shown the behaviour of three WCNs and compared it, in the
+different analysed scenarios, to the properties of synthetic networks
+generated with two random graph models (Erd\H{o}s-Rényi and Bararbási-Albert)
+that have a known degree distribution (respectively Poisson and power law).
+
+The fragility of the WCNs has been highlighted, which is partly attributable
+to their small density and partly to their peculiar structure. WCN show the
+same behaviour in attack scenarios regardless of the centrality metric used
+in the simulation. This suggests that, in the three analysed
+networks, all the metrics are equivalent in their results.
+
+The Barabási-Albert model, which was expected to give results similar to
+those of the WCNs due to its similar degree distribution, had instead shown
+some remarkable differences. First of all, in the removal by degree and
+betweenness centrality, it remained consistently more robust than the WCNs,
+despite a similar density. Secondly, when removing nodes by closeness and
+links by betweenness centrality it performed more similarly to the
+Erd\H{o}s-Rényi model than to the WCNs.
+
+This findings suggest that the preferential attachment growth model used by
+that random graph generator is not really suited for modelling WCNs.
+This may be because it does not produce leaves, which are a consistent part
+of a WCN; another explanation is that different factors guide the growth of
+a WCN, other than the degree of existing nodes.
+
+Subsequently, an analysis of the diffusion of topology information in WCNs
+has been performed. Since they use a link-state routing protocol, the correct
+propagation of the knowledge about the topology is central in order to avoid
+the different nodes having unsynchronised routing tables. Such a situation
+may lead to potentially catastrophic effects on the whole network, like the
+creation of routing loops.
+
+The two metrics reported by this analysis are: a ranking of nodes by the expected
+fraction of other nodes they receive information from; and a ranking by the
+expected number of nodes which receive information from them.
+
+The most evident thing that appears by looking at these metrics is that loss
+of messages in WCNs is really common on long paths. In WCNs links are highly
+heterogeneous, there are really good one as well as really bad ones.
+Unfortunately, a single really bad link in a path is enough to jeopardize
+all the communications that pass through that path.
+
+Another, more subtle result, obtained by comparing different strategies of
+flooding and different kind of link-state advertisement messages, is that
+networks benefit from a more frequent diffusion of information on local (nearby)
+nodes with respect to information on distant nodes. This produces a beneficial
+effect because, with the same frequency of distant node updates, if each nodes
+propagates information on its neighbours the distribution is more efficient.
+
+Moreover, since each node can only choose the next hop, the complete and exact
+knowledge of the route when doing long distance routing is in most cases
+unnecessary and reducing the rate of far reaching topology updates may produce
+more advantages than damage.
+
+Some authors, for instance the implementers of the OLSR daemon and of the
+B.A.T.M.A.N. routing protocol, suggested that link-state routing protocols,
+which presume that each node must have the possibility to calculate every
+route, are ill suited to wireless mesh networks, where the topology
+is rapidly changing.
+
+Research is ongoing in the field of mesh network routing protocols, and there
+is not yet a winner. In the meantime, WCNs all over the world continue
+running with a variety of routing protocols and configurations, despite their
+weaknesses and shortcomings.
+If the situation today appears good for WCNs, it is also clear that there are
+large opportunities of technological improvement.
 
 \section{Final remarks}\label{final-remarks}
 
-The three Community Networks analysed in this thesis are all up and running,
-regardless of the results expressed above about their fragility and difficulty
-to propagate routing information.
+The software used for the analysis of this thesis has been developed during
+my internship with Prof. Renato Antonio Lo Cigno and Dott. Leonardo Maccari
+of the ??? laboratory of DISI.
+
+The software, the test cases and the raw result data are available on the public
+git repository \dots TODO % TODO
 
 \section{Acknowledgements}\label{acknowledgements}
 
@@ -1416,5 +1492,8 @@ Encyclopedia.'' 2014. June 10.
 
 Newman, Mark. 2010. \emph{Networks: An Introduction}. Oxford University
 Press, USA.
+
+``The history of OLSR'' by the developers of OSLR and B.A.T.M.A.N.
+\url{http://www.open-mesh.org/projects/open-mesh/wiki/The-olsr-story}
 
 \end{document}
