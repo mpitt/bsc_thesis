@@ -13,7 +13,7 @@ matplotlib.rcParams['axes.labelsize'] = 20
 matplotlib.rcParams['legend.fontsize'] = 20
 matplotlib.rcParams['xtick.labelsize'] = 18
 matplotlib.rcParams['ytick.labelsize'] = 18
-matplotlib.rcParams['svg.fonttype'] = 'none'
+# matplotlib.rcParams['svg.fonttype'] = 'none'
 import matplotlib.pyplot as plt
 from multiprocessing import Process, Queue
 # from scipy import optimize
@@ -210,7 +210,11 @@ class dataPlot:
                 ci = self.yCI[dataDimension]
                 ax.errorbar(x, y, yerr=ci, fmt=style, **kwargs)
             else:
-                ax.loglog(x, y, style, **kwargs)
+                if not l.startswith(r'$'):
+                    ax.loglog(x, y, marker="o",
+                              ls=":", **kwargs)
+                else:
+                    ax.loglog(x, y, **kwargs)
             dataDimension += 1
         if self.xright is not None:
             ax.set_xlim(right=self.xright)
@@ -276,15 +280,15 @@ if __name__ == "__main__":
         for test in range(numtests):
             graphs["b-a"].append(
                 nx.barabasi_albert_graph(nodes, m=barabasi_m))
-    if graphModes == "wcn" or graphModes == "all":
-        try:
-            f = open("../simpleCN-50.pickle")
-        except IOError:
-            print("file ../simpleCN-50.pickle")
-            raise
-        else:
-            graphs.update(pk.load(f))
-            f.close()
+    # if graphModes == "wcn" or graphModes == "all":
+    #     try:
+    #         f = open("../simpleCN-50.pickle")
+    #     except IOError:
+    #         print("file ../simpleCN-50.pickle")
+    #         raise
+    #     else:
+    #         graphs.update(pk.load(f))
+    #         f.close()
     if graphModes == "known":
         try:
             f = open("known.pickle")
@@ -376,7 +380,7 @@ if __name__ == "__main__":
             plot.yAxisLabel = "Frequency"
             plot.legendPosition = "center right"
             plot.outFile = resultDir + "/degree_distribution"
-            # plot.plotData(style="o:")
+            plot.plotData(style="o:")
             plot.plotData()
         else:
             for mode in graphs:

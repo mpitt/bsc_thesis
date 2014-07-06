@@ -1,4 +1,4 @@
-\documentclass[oneside,openany]{memoir}
+\documentclass[a4paper,11pt,twoside,openleft]{memoir}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
 \usepackage{mathtools}
@@ -53,8 +53,13 @@
 \setlength{\emergencystretch}{3em}  % prevent overfull lines
 \setcounter{secnumdepth}{0}
 \usepackage[hypcap]{caption}
+\usepackage{subcaption}
 \usepackage[section]{placeins}
-\newcommand{\figref}[1] {Figure\,\ref{#1}}
+\usepackage{xspace}
+\newcommand{\myName}{Michele Pittoni\xspace}
+\newcommand{\myTitle}{Advanced Topology Analysis in Three Wireless Community Networks\xspace}
+\newcommand{\myProf}{Prof. Renato Antonio Lo Cigno\xspace}
+\newcommand{\figref}[1] {Figure~\ref{#1}}
 \newcommand{\st}{\text{ st. }}
 \newcommand{\etx}{\mathrm{ETX}}
 \newcommand{\linkq}{\mathrm{LQ}}
@@ -65,9 +70,13 @@
 
 \title{Advanced Topology Analysis in Three Wireless Community Networks}
 \author{Michele Pittoni}
-\date{2014 - VI}
+\date{July 2014}
 
 \begin{document}
+
+\input{frontespizio}
+\cleardoublepage
+
 \tableofcontents
 
 \chapter*{Introduction}\label{introduction}
@@ -809,19 +818,23 @@ The three WCNs which are analysed in the theses are Ninux (in Italy),
 FunkFeuer Wien and FunkFeuer Graz (in Austria). The study considers 50
 snapshots of the networks taken in January 2014.
 
-\begin{longtable}[c]{@{}rccc@{}}
-\toprule\addlinespace
-& Ninux & FFWien & FFGraz
-\\\addlinespace
-\midrule\endhead
-date & 20/01/14 & 13/01/14 & 13/01/14
-\\\addlinespace
-snapshot interval & 5 min & 5 min & 10 min
-\\\addlinespace
-timespan & 4h 10min & 4h 10min & 8h 20min
-\\\addlinespace
-\bottomrule
-\end{longtable}
+\begin{center}
+  \begin{tabular}{@{}rccc@{}}
+  \toprule\addlinespace
+  & Ninux & FFWien & FFGraz
+  \\\addlinespace
+  \midrule
+  date & 20/01/14 & 13/01/14 & 13/01/14
+  \\\addlinespace
+  snapshot interval & 5 min & 5 min & 10 min
+  \\\addlinespace
+  timespan & 4h 10min & 4h 10min & 8h 20min
+  \\\addlinespace
+  \bottomrule
+  \addlinespace
+  \end{tabular}
+  \captionof{table}{Details of the data collection}
+\end{center}
 
 The snapshots were obtained by the interpolation of the OLSR topology
 exported directly by the routing daemons on the nodes (since each node
@@ -934,43 +947,50 @@ degree of 2.764.
   \caption{Map of the FunkFeuer Graz network}
 \end{figure}
 
+\clearpage
 \section{Comparison}\label{comparison}
 
-\begin{longtable}[c]{@{}lccc@{}}
-\toprule\addlinespace
-& Ninux & FFWien & FFGraz
-\\\addlinespace
-\midrule\endhead
-Nodes & 132 & 237 & 144
-\\\addlinespace
-Links & 154 & 433 & 199
-\\\addlinespace
-Average degree & 2.333 & 3.654 & 2.764
-\\\addlinespace
-Density & 0.018 & 0.015 & 0.019
-\\\addlinespace
-Leaf nodes & 69.02 (52\%) & 77.96 (33\%) & 64.72 (0,45\%)
-\\\addlinespace
-\bottomrule
-\addlinespace
-\caption{High level features of the three WCNs}
-\end{longtable}
+\begin{table}
+  \centering
+  \begin{tabular}{@{}lccc@{}}
+    \toprule\addlinespace
+    & Ninux & FFWien & FFGraz
+    \\\addlinespace
+    \midrule
+    Nodes & 132 & 237 & 144
+    \\\addlinespace
+    Links & 154 & 433 & 199
+    \\\addlinespace
+    Average degree & 2.333 & 3.654 & 2.764
+    \\\addlinespace
+    Density & 0.018 & 0.015 & 0.019
+    \\\addlinespace
+    Leaf nodes & 69.02 (52\%) & 77.96 (33\%) & 64.72 (0,45\%)
+    \\\addlinespace
+    \bottomrule
+    \addlinespace
+  \end{tabular}
+  \caption{High level features of the three WCNs}
+\end{table}
 
-\begin{figure}[htb]
-\centering
-\includegraphics{graphs/degree_distribution.pdf}
-\caption{Degree distributions of the three WCNs, compared with the
-Erd\H{o}s-Rényi (e-r) and Barabási-Albert (b-a) models}
-\label{fig:wcn-degree-distribution}
+\begin{figure}[hbt]
+  \centering
+  \hspace*{\fill}
+  \includegraphics[width=0.49\textwidth]{graphs/degree_distribution_wcn.pdf}
+  \hfill
+  \includegraphics[width=0.49\textwidth]{graphs/degree_distribution_syn.pdf}
+  \hspace*{\fill}
+  \caption{Degree distribution of the three WCNs, compared with the
+    Erd\H{o}s-Rényi and Barabási-Albert models}
+  \label{fig:wcn-degree-distribution}
 \end{figure}
 
-\FloatBarrier
-As \figref{fig:wcn-degree-distribution} shows, the degree distributions of the three WCNs
+As \figref{fig:wcn-degree-distribution}
+shows, the degree distributions of the three WCNs
 roughly follow a power law $k^{-2}$, as does the random Barabási-Albert
 model. One objective of this analysis is to understand if the model can
 be used to predict other properties of the real networks.
 
-\newpage
 \begin{figure}[htb]
 \centering
 \includegraphics{graphs/weight_rank.pdf}
@@ -978,7 +998,6 @@ be used to predict other properties of the real networks.
 \label{fig:wcn-link-ranking}
 \end{figure}
 
-\FloatBarrier
 As can be seen in \figref{fig:wcn-link-ranking}, the three networks have a quite
 different distribution of link quality (the metric shown in the graph is
 $1 - \frac{1}{\etx}$, which is also used for the signalling analysis in
@@ -1145,44 +1164,71 @@ order to compare them in the same graph.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{./synthetic_topologies/results/20140618-1529/nodes_random_robustness.png}
-\caption{Random removal}
+\includegraphics{graphs/nodes_random_robustness}
+\caption{Random removal of nodes}
+\label{fig:node_rand}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{./synthetic_topologies/results/20140618-1529/nodes_deg_robustness.png}
-\caption{Removal by degree}
+\includegraphics{graphs/nodes_deg_robustness}
+\caption{Removal of nodes by degree}
+\label{fig:node_deg}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{./synthetic_topologies/results/20140618-1529/nodes_bet_robustness.png}
-\caption{Removal by betweenness centrality}
+\includegraphics{graphs/nodes_bet_robustness}
+\caption{Removal on nodes by betweenness centrality}
+\label{fig:node_bet}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{graphs/nodes_close_robustness}
+\caption{Removal of nodesby closeness centrality}
+\label{fig:node_close}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{graphs/links_random_robustness}
+\caption{Random removal of links}
+\label{fig:link_rand}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{graphs/links_bet_robustness}
+\caption{Removal of links by betweenness centrality}
+\label{fig:link_bet}
 \end{figure}
 
 As shown in the figures, there is a marked difference between the
 behaviour of the three WCNs (which is similar) and the behaviour of the
 random graphs. The WCNs are more fragile in all tests, but while the
-difference in the random removal case may be explained by the lower
-density, in all of the ordered removal cases they consistently fail
-after just 10\% of nodes are removed.
+difference in the random removal case (\figref{fig:node_rand}) may be
+explained by the lower density, in all of the ordered removal cases they
+consistently fail after just 10\% of nodes are removed.
 
 The scale-free random networks is, as expected, less robust than the
 Erd\H{o}s-Rényi model in targeted attack to nodes with the highest
-degree, and has the same proceeding with removal by betweenness. On the
-other hand, removing nodes by closeness centrality does not really show
-a big difference between the two models.
+degree (\figref{fig:node_deg}), and has the same proceeding with removal
+by betweenness (\figref{fig:node_bet}). On the
+other hand, removing nodes by closeness centrality (\figref{fig:node_close})
+shows a quite less marked difference between the two models.
 
 WCNs, on the contrary, behave the same in all the scenarios in which
-nodes are removed in order, independently from the metric used. This
+nodes are removed in order, independently from the metric used
+(\figref{fig:node_deg}, \ref{fig:node_bet}, \ref{fig:node_close}). This
 suggest that, in those networks, the central nodes are the same for all
 the metrics. This also means that the topology of WCNs, despite the big
 similarity of the degree distribution, is different from the
 preferential attachment model. Moreover, this difference seems to go in
 the direction of less robustness.
 
-The removal of links also shows a similar picture. None of the random
+The removal of links (\figref{fig:link_rand} and \ref{fig:link_bet})
+also shows a similar picture. None of the random
 models approximates well the behaviour of the WCNs, which quickly fail
 after a small fraction of links has been removed. Here a peculiar
 behaviour appears in FFGraz: in this network, there are some nicely
@@ -1216,11 +1262,9 @@ a node it can see.
 So, the growth of a WCN does not follow the preferential attachment rule,
 even if the resulting degree distribution seems similar.
 
-\chapter{Message propagation
-analysis}\label{message-propagation-analysis}
+\chapter{Message propagation analysis}\label{message-propagation-analysis}
 
-\section{The importance of
-signalling}\label{the-importance-of-signalling}
+\section{The importance of signalling}\label{the-importance-of-signalling}
 
 The robustness of a network is based on a static analysis of the
 connectivity of the network graph when removing nodes or links. A
@@ -1329,15 +1373,47 @@ efficiency of their links.
 
 \section{Results}\label{signalling-results}
 
+\begin{figure}[htb]
+  \centering
+  \hspace*{\fill}
+  \includegraphics[width=0.49\textwidth]{graphs/all-batman-Tc}
+  \hfill
+  \includegraphics[width=0.49\textwidth]{graphs/all-batman-Rc}
+  \hspace*{\fill}
+  \caption{Nodes (normalized to 100) ranked by $t_i, t'_i$ in the L-S scenario}
+  \label{fig:mp_ls}
+\end{figure}
+
+\begin{figure}[htb]
+  \centering
+  \hspace*{\fill}
+  \includegraphics[width=0.49\textwidth]{graphs/all-default-Tc}
+  \hfill
+  \includegraphics[width=0.49\textwidth]{graphs/all-default-Rc}
+  \hspace*{\fill}
+  \caption{Nodes (normalized to 100) ranked by $t_i, t'_i$ in the WCN scenario}
+  \label{fig:mp_wcn}
+\end{figure}
+
+\begin{figure}[htb]
+  \centering
+  \hspace*{\fill}
+  \includegraphics[width=0.49\textwidth]{graphs/all-mpr-Tc}
+  \hfill
+  \includegraphics[width=0.49\textwidth]{graphs/all-mpr-Rc}
+  \hspace*{\fill}
+  \caption{Nodes (normalized to 100) ranked by $t_i, t'_i$ in the OLSR scenario}
+  \label{fig:mp_olsr}
+\end{figure}
+
 As expected, FunkFeuer Graz is the network that shows the poorest performance,
 due to the bad quality of its links and its peculiar topology. Ninux and
 FunkFeuer Wien have similar results, with the former responding a bit better.
 
-Figure ?% \figref{fig:sig-ls}
-shows that nodes have a big difficulty reaching the entire network with their
-messages, with no one, even in the best case, exceeding 0.9.
-In contrast, figure ?% \figref{fig:sig-wcn}
-suggests the importance of transmitting information about neighbours.
+\figref{fig:mp_ls} shows that nodes have a big difficulty reaching the entire
+network with their messages, with no one, even in the best case, exceeding 0.9.
+In contrast, \figref{fig:mp_wcn} suggests the importance of transmitting
+information about neighbours.
 
 By adding content to the messages, signalling becomes more effective and
 less traffic is needed to propagate the required information.
@@ -1356,7 +1432,8 @@ messages with small (1, 2, 3) TTL values often, the local topology is
 updated more frequently without imposing much overhead of the network.
 \footnote{\url{http://www.open-mesh.org/projects/open-mesh/wiki/The-olsr-story}}
 
-The addition of MPR forwarding logic is predictably worse than the WCN scenario,
+The addition of MPR forwarding logic (\figref{fig:mp_olsr})
+is predictably worse than the WCN scenario,
 since redundancy is removed both by the non-use of some links and by some nodes
 not generating messages.
 Nonetheless, this mode of propagation works substantially better than the L-S
@@ -1470,7 +1547,7 @@ git repository \dots TODO % TODO
 \addcontentsline{toc}{chapter}{Bibliography}
 
 Barabási, Albert-László, and Réka Albert. 1999. ``Emergence of Scaling
-in Random Networks.'' \emph{Science} 286 (5439): 509--12.
+in Random Networks.'' \emph{Science} 286 (5439): 509--12.\\
 doi:\href{http://dx.doi.org/10.1126/science.286.5439.509}{10.1126/science.286.5439.509}.
 \url{http://www.sciencemag.org/content/286/5439/509}.
 

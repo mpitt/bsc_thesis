@@ -5187,7 +5187,7 @@ z
      </g>
     </g>
     <g id="text_14">
-     <!-- $\bar{t_i}$ -->
+     <!-- $t_i$ -->
      <defs>
       <path d="
 M7.8125 7.17188
@@ -5230,13 +5230,6 @@ Q25.0469 56.7812 22.9062 56.7812
 Q21.2969 56.7812 20.1875 57.875
 Q19.0938 58.9844 19.0938 60.5938" id="Cmmi10-69"/>
       <path d="
-M6.89062 55.5156
-L6.89062 58.9844
-L43.0156 58.9844
-L43.0156 55.5156
-z
-" id="Cmr10-b9"/>
-      <path d="
 M6.20312 8.10938
 Q6.20312 9.57812 6.5 10.8906
 L13.7188 39.5938
@@ -5274,9 +5267,8 @@ Q11.625 -1.125 8.90625 1.45312
 Q6.20312 4.04688 6.20312 8.10938" id="Cmmi10-74"/>
      </defs>
      <g transform="translate(72.5709375 439.1)rotate(-90.0)scale(0.2 -0.2)">
-      <use transform="translate(10.109375 47.015625)" xlink:href="#Cmr10-b9"/>
-      <use transform="translate(0.0 27.4375)" xlink:href="#Cmmi10-74"/>
-      <use transform="translate(36.083984375 1.928125)scale(0.7)" xlink:href="#Cmmi10-69"/>
+      <use transform="translate(0.0 27.40625)" xlink:href="#Cmmi10-74"/>
+      <use transform="translate(36.083984375 1.896875)scale(0.7)" xlink:href="#Cmmi10-69"/>
      </g>
     </g>
    </g>

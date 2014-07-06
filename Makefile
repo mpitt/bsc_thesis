@@ -2,5 +2,8 @@ all: pdf
 
 pdf: thesis.pdf
 
-thesis.pdf: thesis.md
-	pandoc -s -S -o thesis.pdf --latex-engine xelatex --toc -V documentclass=memoir -V classoption=openany -V classoption=oneside --filter pandoc-citeproc thesis.md
+thesis.pdf: thesis.aux thesis.toc frontespizio.tex
+	xelatex thesis.tex
+
+thesis.aux thesis.toc: thesis.tex
+	xelatex thesis.tex

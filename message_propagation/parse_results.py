@@ -132,13 +132,16 @@ if __name__ == "__main__":
                         ecolor="grey",
                         elinewidth=0.5)
                 plt.xlabel("Nodes (%)")
-                plt.ylabel(r'$\bar{t_i}$')
+                if direction == "Tc":
+                    plt.ylabel(r"$t_i$")
+                else:
+                    plt.ylabel(r"$t'_i$")
                 plt.ylim(0, 1.01)
                 plt.xlim(0, 100)
                 plt.legend(tuple(networks), "lower right")
                 plt.axhline(1, color="grey", lw=0.5, ls="-.")
                 if suffix is not None:
-                    plt.savefig("results/all-{}-{}-{}.svg".format(
+                    plt.savefig("results/all-{}{}-{}.svg".format(
                         mode, suffix, direction))
                 else:
                     plt.savefig("results/all-{}-{}.svg".format(
