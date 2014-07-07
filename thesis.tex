@@ -1014,20 +1014,26 @@ degree of 2.764 (see the map on \figref{fig:graz_map}).
 
 \begin{figure}[hbt]
   \centering
-  \hspace*{\fill}
-  \includegraphics[width=0.49\textwidth]{graphs/degree_distribution_wcn.pdf}
-  \hfill
-  \includegraphics[width=0.49\textwidth]{graphs/degree_distribution_syn.pdf}
-  \hspace*{\fill}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics{graphs/degree_distribution_wcn.pdf}
+    \caption{Ninux, FFWien and FFGraz}
+    \label{fig:deg_wcn}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics{graphs/degree_distribution_syn.pdf}
+    \caption{Random models}
+    \label{fig:deg_syn}
+  \end{subfigure}
   \caption{Degree distribution of the three WCNs, compared with the
     Erd\H{o}s-Rényi and Barabási-Albert models}
-  \label{fig:wcn-degree-distribution}
+  \label{fig:deg_com}
 \end{figure}
 
-As \figref{fig:wcn-degree-distribution}
+As \figref{fig:deg_wcn}
 shows, the degree distributions of the three WCNs
 roughly follow a power law $k^{-2}$, as does the random Barabási-Albert
-model. One objective of this analysis is to understand if the model can
+model (\figref{fig:deg_syn}).
+One objective of this analysis is to understand if the model can
 be used to predict other properties of the real networks.
 
 \begin{figure}[htb]
@@ -1478,34 +1484,49 @@ efficiency of their links.
 
 \begin{figure}[htb]
   \centering
-  \hspace*{\fill}
-  \includegraphics[width=0.49\textwidth]{graphs/all-batman-Tc}
-  \hfill
-  \includegraphics[width=0.49\textwidth]{graphs/all-batman-Rc}
-  \hspace*{\fill}
-  \caption{Nodes (normalized to 100) ranked by $t_i, t_i'$ in the L-S scenario}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics{graphs/all-batman-Tc}
+    \caption{Normalised nodes ranked by $t_i$}
+    \label{fig:mp_ls_t}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics{graphs/all-batman-Rc}
+    \caption{Normalised nodes ranked by $t_i'$}
+    \label{fig:mp_ls_r}
+  \end{subfigure}
+  \caption{L-S scenario}
   \label{fig:mp_ls}
 \end{figure}
 
 \begin{figure}[htb]
   \centering
-  \hspace*{\fill}
-  \includegraphics[width=0.49\textwidth]{graphs/all-default-Tc}
-  \hfill
-  \includegraphics[width=0.49\textwidth]{graphs/all-default-Rc}
-  \hspace*{\fill}
-  \caption{Nodes (normalized to 100) ranked by $t_i, t_i'$ in the WCN scenario}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics{graphs/all-default-Tc}
+    \caption{Normalised nodes ranked by $t_i$}
+    \label{fig:mp_wcn_t}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics{graphs/all-default-Rc}
+    \caption{Normalised nodes ranked by $t_i'$}
+    \label{fig:mp_wcn_r}
+  \end{subfigure}
+  \caption{WCN scenario}
   \label{fig:mp_wcn}
 \end{figure}
 
 \begin{figure}[htb]
   \centering
-  \hspace*{\fill}
-  \includegraphics[width=0.49\textwidth]{graphs/all-mpr-Tc}
-  \hfill
-  \includegraphics[width=0.49\textwidth]{graphs/all-mpr-Rc}
-  \hspace*{\fill}
-  \caption{Nodes (normalized to 100) ranked by $t_i, t_i'$ in the OLSR scenario}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics{graphs/all-mpr-Tc}
+    \caption{Normalised nodes ranked by $t_i$}
+    \label{fig:mp_olsr_t}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics{graphs/all-mpr-Rc}
+    \caption{Normalised nodes ranked by $t_i'$}
+    \label{fig:mp_olsr_r}
+  \end{subfigure}
+  \caption{OLSR scenario}
   \label{fig:mp_olsr}
 \end{figure}
 
