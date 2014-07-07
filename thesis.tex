@@ -94,8 +94,8 @@ grow surrounded by technology and are used to expect this sort of information
 ubiquity.
 
 Cellular networks are usually not very performing with regard to speed and offer
-a limited amount of traffic at prices that are considered quite high.
-Meanwhile, they are not the only way to connect in mobility: municipalities
+a limited amount of traffic at prices that are quite high.
+Still, they are not the only way to connect in mobility: municipalities
 and commercial activities are building public Wi-Fi networks for their
 citizens or customers, usually for free.
 
@@ -111,7 +111,7 @@ approach, which leverages existing technology to build networks in ways that
 were not foreseen.
 They push the Wi-Fi standard to the limit of its efficiency, especially
 in terms of range. They exist thanks to the volunteer actions of their members,
-and the network grows with the community (most of the time, community is
+and they grow with the community (most of the time, community is
 first and the network follows).
 
 They represent a challenge and an ideal place for experiments for a network
@@ -125,12 +125,12 @@ of which Wireless Community Networks are part, is an active research field.
 Traditional routing protocols have been shown to be poor suited to these
 environments, for a variety of reasons.
 
-Another topic which gathers much interest is the measuring of the performances
-of these networks. Their decentralised nature makes difficult to analyse
+Another topic which gathers much interest is measuring the performances
+of these networks. Their decentralised nature makes it difficult to analyse
 the behaviour of traffic: just knowing its volume is a challenge, since in
 theory every node should be monitored to acquire this information.
 
-A reason which I've personally found exciting to examine Wireless Community
+A reason that made it really interesting to examine Wireless Community
 Networks is that they seem a credible approach toward a communication
 infrastructure which is really a common good. An infrastructure owned by the
 citizens and operated without central authorities seems a more than reasonable
@@ -171,7 +171,7 @@ impacts the diffusion of information on the topology.
 Nodes which do not receive this information often enough may suffer from the
 choice of suboptimal routes or even ignore the existence of other nodes.
 This analysis shows the impact of link loss on routing information
-in the three networks, simulation three routing protocols with different
+in the three networks, simulating three routing protocols with different
 signalling methodologies.
 
 \chapter{Wireless Community Networks}\label{wireless-community-networks}
@@ -1054,8 +1054,8 @@ Chapter 16 of \cite{newman_networks:_2010}.
 Percolation is the process of removing nodes (\emph{site percolation})
 or edges (\emph{bond percolation}) and observing the properties of the
 remaining graph. More specifically, by examining the connected
-components of the graph, it can be decided if the underlying system is
-still functioning the same after removing nodes (or edges). The removal
+components of the graph, the degree of functionality of the underlying system 
+after removing nodes (or edges) can be evaluated. The removal
 of nodes simulates a variety of real-world situations -- from hardware
 failures in communication networks to vaccinated people in the spread
 of a disease. Removing edges addresses other cases, also interesting in
@@ -1078,7 +1078,7 @@ affirmed that in such a situation, at least part of the network is still
 working as intended. Removing even more nodes, however, leads to a point
 where the largest component does not contain a significant fraction of
 the nodes -- it becomes indistinguishable from the smaller ones. This is
-the point in which the network loses all its function.
+the point in which the network loses its function.
 
 To formally define a robustness metric, name the connected components of
 a graph, ordered non-increasingly by the number of their nodes,
@@ -1101,9 +1101,9 @@ there is between more and less impacting nodes.
 The classical approach to percolation is to remove nodes randomly in an
 uniform way. Also popular is the removal of the nodes with highest
 degree first. Other methods, such as ordering by centrality, have also
-been explored. Comparing this different methods gives not only useful
-information on how the metrics predict the impact of a node when
-removed, but also on the behaviour of the examined networks. Some
+been explored. Comparing these different methods gives not only useful
+information on how the metrics predict the impact of the removal of a node,
+but also on the behaviour of the examined networks. Some
 networks, for example, behave more or less the same regardless of the
 order of removal. Others show a dramatically different response.
 Scale-free networks are the typical example of a network that is highly
@@ -1193,10 +1193,10 @@ model}
 The analysis was performed on 50 snapshots of the topology of the three
 WCNs, as well as 30 graphs for each of the random models.
 
-The algorithm simply removed nodes (or links) one by one and checked the
+The algorithm simply removes nodes (or links) one by one and checks the
 size of the largest connected component. In the case of random removal,
-the test was repeated 30 times for each graph, changing the order every
-time.
+the test was repeated 30 times for each graph, with a different random
+sequence every time.
 
 The test considered the removal of at most 40\% of the nodes (or links).
 Other values have been tried, but this was determined to be sufficient
@@ -1204,7 +1204,7 @@ to observe the expected behaviour. Highest values just increased the
 simulation time without adding useful information.
 
 The results were averaged over the graphs of the same kind and expressed
-in term of fraction of removed nodes, rather than number of nodes, in
+in terms of fraction of removed nodes, rather than number of nodes, in
 order to compare them in the same graph.
 
 \section{Results}\label{results}
@@ -1251,7 +1251,7 @@ order to compare them in the same graph.
 \label{fig:link_bet}
 \end{figure}
 
-As shown in the figures, there is a marked difference between the
+As shown in the figures, there is a evident difference between the
 behaviour of the three WCNs (which is similar) and the behaviour of the
 random graphs. The WCNs are more fragile in all tests, but while the
 difference in the random removal case (\figref{fig:node_rand}) may be
@@ -1340,10 +1340,10 @@ messages are usually flooded through the network with a simple duplicate
 detection mechanism to avoid broadcast storms.
 
 OLSR uses a more sophisticated technique to reduce the overhead of
-routing. This of course comes at a cost in redundancy, since if a link
-loses \texttt{TC} messages, these are not received through other routes.
+routing. This of course comes at a cost in redundancy, since if a \texttt{TC}
+message is lost, it is not received through other routes.
 OLSR also has \texttt{HELLO} messages, which are only exchanged with
-neighbours and allow \texttt{TC} messages, which are only generated by
+neighbours and enable \texttt{TC} messages, which are only generated by
 MPRs, to contain information about all the neighbours of the node which
 generates them.
 
@@ -1576,7 +1576,7 @@ different analysed scenarios, to the properties of synthetic networks
 generated with two random graph models (Erd\H{o}s-Rényi and Bararbási-Albert)
 that have a known degree distribution (respectively Poisson and power law).
 
-The fragility of the WCNs has been highlighted, which is partly attributable
+The fragility of the WCNs has been highlighted, which is partly due
 to their small density and partly to their peculiar structure. WCN show the
 same behaviour in attack scenarios regardless of the centrality metric used
 in the simulation. This suggests that, in the three analysed
